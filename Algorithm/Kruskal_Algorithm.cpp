@@ -10,7 +10,7 @@ int getParent(int parent[], int x)
 }
 
 // 두 부모를 합치는 함수
-int unionParent(int parent[], int a, int b)
+void unionParent(int parent[], int a, int b)
 {
 	a = getParent(parent, a);
 	b = getParent(parent, b);
