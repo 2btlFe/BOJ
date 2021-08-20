@@ -66,7 +66,7 @@ int main(void)
 	sort(v.begin(), v.end());
 	
 	//각 정점이 포함된 그래프가 어디인지 저장%
-	int parent[n];
+	int parent[n+1];
 	for(int i = 1; i <= n; i++)
 	{
 		parent[i] = i;
