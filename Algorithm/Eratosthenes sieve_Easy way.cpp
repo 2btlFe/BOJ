@@ -1,0 +1,34 @@
+//에라토스테네스의 체 - 쉬운방법
+//시간복잡도(N*loglogN)
+#include<bits/stdc++.h>
+
+using namespace std;
+
+int main()
+{
+	int n;
+	cin >> n;
+	
+	//1) 2차원 배열 생성
+	int arr[n+1];
+	fill(arr, arr+n, 1);
+	
+	
+	for(int i = 2; i <= n; i++)
+	{
+		//3) 이미 지워진 숫자는 건너 뛴다
+		if(arr[i] == 0) continue;
+		//2) 2부터 시작해서 특정 숫자의 배수에 해당하는 숫자들을 지운다
+		for(int j = i + i; j <= n; j += i)
+		{
+			arr[j] = 0;
+		}
+	}
+	
+	//4) 남은 숫자들을 출력
+	for(int i = 2; i <= n; i++)
+	{
+		if(arr[i] != 0) cout << i << " ";
+	}
+	
+}
