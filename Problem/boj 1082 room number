@@ -1,0 +1,77 @@
+//Actually, I didn't get 100% score from online judge
+//You can use this code for just reference
+
+#include <bits/stdc++.h>
+
+using namespace std;
+
+string cmp(string a, string b)
+{
+  if(a.length() > b.length())
+  {
+    return a;
+  }
+  else if(b.length() > a.length())
+  {
+    return b;
+  }
+  else
+  {
+    for(int i = 0; i < a.length(); i++)
+    {
+      if(a[i] > b[i]) return a;
+      else if(b[i] > a[i]) return b;
+    }
+    return a;
+  }
+}
+
+int main() {
+  string dp[52];
+  string cost[11];
+
+  int N;
+  cin >> N;
+
+  if(N == 1)
+  {
+    cout << "0";
+  }
+
+  fill(dp, dp+51, "0");
+  fill(cost, cost+10, "-1");
+  string ans = "0";
+  vector<pair<int, int> > v;
+
+  for(int i = 0; i < N; i++)
+  {
+    int n;
+    cin >> n;
+    dp[n] = cmp(dp[n],to_string(i));
+    cost[n] = dp[n];
+    v.push_back({n,i});
+  }
+
+  int M;
+  cin >> M;
+
+  for(auto tmp : v)
+  {
+    if(tmp.first <= M) ans = cmp(to_string(tmp.second), ans);  
+  }
+
+  for(int n = 1; n <= M; n++)
+  {
+    if(dp[n] == "0") continue;
+
+    for(int p = 1; p <= M; p++)
+    {
+      if(n+p > M || cost[p] == "-1") continue;
+
+      dp[n+p] = cmp(dp[n+p], dp[n]+cost[p]);  
+      ans = cmp(ans, dp[n+p]);
+    }
+  }
+
+  cout << ans;
+} 
