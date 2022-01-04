@@ -1,9 +1,9 @@
-//Actually, I didn't get 100% score from online judge
-//You can use this code for just reference
+#include<bits/stdc++.h>  
 
-#include <bits/stdc++.h>
-
-using namespace std;
+using namespace std;  
+vector<pair<string, int> > v;
+string cache[52];
+int M;
 
 string cmp(string a, string b)
 {
@@ -11,67 +11,65 @@ string cmp(string a, string b)
   {
     return a;
   }
-  else if(b.length() > a.length())
+  else if(a.length() < b.length())
   {
     return b;
   }
   else
   {
-    for(int i = 0; i < a.length(); i++)
+    int i = 0;
+    while(i < a.length())
     {
       if(a[i] > b[i]) return a;
-      else if(b[i] > a[i]) return b;
+      else if(a[i] < b[i]) return b;
+      i++;
     }
-    return a;
   }
+  return a;
 }
 
-int main() {
-  string dp[52];
-  string cost[11];
+string RoomNumber(int w)
+{
+  string& ret = cache[w];
+  if(ret != "") return ret;
 
-  int N;
-  cin >> N;
+  //base case
+  if(w == 0) return "";
 
-  if(N == 1)
+  for(auto e : v)
   {
-    cout << "0";
+    if(w >= e.second && RoomNumber(w-e.second) != "0")
+    {
+      //cout << ret << "VS" << RoomNumber(w-e.second)+e.first << '\n';
+      ret = cmp(ret, RoomNumber(w-e.second)+e.first);
+    }
   }
 
-  fill(dp, dp+51, "0");
-  fill(cost, cost+10, "-1");
-  string ans = "0";
-  vector<pair<int, int> > v;
+  return ret;
+}
+
+int main() {   
+  int N;
+  cin >> N;
+  fill(cache, cache+51, "");
 
   for(int i = 0; i < N; i++)
   {
-    int n;
-    cin >> n;
-    dp[n] = cmp(dp[n],to_string(i));
-    cost[n] = dp[n];
-    v.push_back({n,i});
-  }
+    int weight;
+    cin >> weight;
+    v.push_back({to_string(i), weight});
+  }  
 
-  int M;
+
   cin >> M;
 
-  for(auto tmp : v)
+  //아무것도 안 사는 경우가 있을 수 있으므로, 0부터 M까지의 최대를 확인한다 
+  string ans = "";
+  for(int i = 0; i <= M; i++)
   {
-    if(tmp.first <= M) ans = cmp(to_string(tmp.second), ans);  
-  }
-
-  for(int n = 1; n <= M; n++)
-  {
-    if(dp[n] == "0") continue;
-
-    for(int p = 1; p <= M; p++)
-    {
-      if(n+p > M || cost[p] == "-1") continue;
-
-      dp[n+p] = cmp(dp[n+p], dp[n]+cost[p]);  
-      ans = cmp(ans, dp[n+p]);
-    }
+    ans = cmp(ans, RoomNumber(i));
   }
 
   cout << ans;
-} 
+
+}
