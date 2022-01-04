@@ -1,0 +1,70 @@
+//It's so ineffiecient code 
+//So, I should reproduce the problem
+
+#include<bits/stdc++.h>
+
+using namespace std;
+
+int cache[502][502];
+int prefixSum[502];
+int cost[502];
+
+int subTotal(int start, int end)
+{
+  return prefixSum[end] - prefixSum[start] + cost[start];
+}
+
+int val(int start, int end)
+{
+  int &ret = cache[start][end];
+  if(ret != -1) return ret;
+
+  //base case
+  if(start == end)
+  {
+    return ret = 0;
+  }
+
+  vector<int> minList;
+
+  for(int mid = start; mid < end; mid++)
+  {
+    minList.push_back(val(start,mid) + subTotal(start,mid)+val(mid+1, end)+ subTotal(mid+1,end));
+  }
+
+  ret = *min_element(minList.begin(), minList.end());
+
+  return ret;
+}
+
+
+int main()
+{
+  int t;
+  cin >> t;
+
+  while(t--)
+  {
+    memset(cache, -1, sizeof(cache));
+    memset(prefixSum, 0, sizeof(prefixSum));
+    int n;
+    cin >> n;
+
+    for(int i = 1; i <= n; i++)
+    {
+      int tmp;
+      cin >> tmp;
+      cost[i] = tmp;
+      prefixSum[i] = prefixSum[i-1] + tmp;
+    }
+
+    cout << val(1, n) << '\n';
+  }
+}
+
+/*
+1
+4
+40 30 30 50
+
+*/
