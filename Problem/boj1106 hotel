@@ -1,0 +1,39 @@
+#include<bits/stdc++.h>  
+
+using namespace std;  
+const int max_custom = 1101; 
+int cache[max_custom]; 
+vector<pair<int, int> > v; 
+
+int minCost(int custom) {   
+  int ans = 100*1000+1;
+  int &ret = cache[custom];
+
+  //base case
+  if(custom <= 0) return 0; //0보다 작아지면 적어도 조건을 만족한다 
+  else if(ret != -1) return ret;
+  else {
+    for(auto e : v)
+    {
+      ans = min(ans, minCost(custom - e.first)+e.second);
+    }
+    return ret = ans;
+  }
+
+}  
+
+int main() {   
+  memset(cache, -1, sizeof(cache));
+  int C, N;
+  cin >> C >> N;
+
+  while(N--)
+  {
+    int cost, custom;
+    cin >> cost >> custom;
+    v.push_back({custom, cost});
+  }
+
+  cout << minCost(C) << '\n';
+
+}
