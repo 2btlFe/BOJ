@@ -1,0 +1,51 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+int cache[502][502];
+int matrix[502][2];
+const int INF = 987654321;
+
+int val(int start, int end)
+{
+  int &ret = cache[start][end];
+  if(ret != -1) return ret;
+
+  //base case
+  if(start == end)
+  {
+    return ret = 0;
+  }
+
+
+  //ret가 -1이면 min 적용이 어렵기 때문에, INF로 변경하고 min으로 가는 것이 더 빠르다, minList를 모으는 것보다 말이다.
+  int candidate = INF;
+  for(int mid = start; mid < end; mid++)
+  {
+    candidate = min(candidate, matrix[start][0]*matrix[mid][1]*matrix[end][1] + val(start,mid) + val(mid+1, end));
+  }
+
+  return ret = candidate;
+}
+
+int main()
+{
+  ios_base::sync_with_stdio(false);
+  cin.tie(NULL); cout.tie(NULL);
+  memset(cache, -1, sizeof(cache));
+
+  int N;
+  cin >> N;
+
+  for(int i = 0; i < N; i++)
+  {
+    int r, c;
+    cin >> r >> c;
+
+    matrix[i][0] = r;
+    matrix[i][1] = c;
+  }
+
+  cout << val(0, N-1);
+
+}
