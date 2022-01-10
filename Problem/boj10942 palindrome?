@@ -1,0 +1,61 @@
+/*
+boj 10942 팰린드롬
+알고리즘: dp
+시간복잡도: O(N^2)*O(1)
+
+어렵지 않았던 문제
+다만, s와 e의 차가 홀수일 때를 고려하지 못했다
+
+if(s+1 == e) return ret = cost[s] == cost[e];
+
+부분도 신경썼어야 한다 
+*/
+
+
+#include<bits/stdc++.h>
+
+using namespace std;
+
+int cost[2002];
+int cache[2002][2002];
+
+int palindrome(int s, int e)
+{
+  int &ret = cache[s][e];
+  if(ret != -1) return ret;
+
+  //base case
+  if(s == e) return ret = 1;
+  if(s + 1 == e) return ret = cost[s]==cost[e];
+
+  return ret = (cost[s] == cost[e]) && palindrome(s+1, e-1);
+}
+
+int main()
+{
+  ios_base::sync_with_stdio(false);
+  cin.tie(NULL); cout.tie(NULL);
+
+  memset(cache, -1, sizeof(cache));
+  
+  int N; 
+  cin >> N;
+
+  for(int i = 1; i <= N; i++)
+  {
+    int tmp;
+    cin >> tmp;
+    cost[i] = tmp;
+  }
+
+  int M;
+  cin >> M;
+
+  while(M--)
+  {
+    int s, e;
+    cin >> s >> e;
+
+    cout << palindrome(s,e) << '\n';
+  }
+}
