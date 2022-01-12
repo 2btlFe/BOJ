@@ -1,0 +1,56 @@
+/*
+boj 2629
+알고리즘: dp
+시간복잡도: O(N*M)
+
+//문제는 한번에 배열에 값을 저장시키는 void형 함수로 적용하면 0ms가 나올텐데
+//다시 한번 풀어봐야겠다
+*/
+
+#include<bits/stdc++.h>
+
+using namespace std;
+vector<int> v;
+int cache[65002][31];
+int N;
+
+int scale(int w, int i)
+{
+ //base case
+  if(i == N) return w == 0 ? 1 : 0;
+
+  int& ret = cache[w][i];
+  if(ret != -1) return ret;
+
+  ret = 0;
+  return ret = scale(w, i+1) || scale(abs(w - v[i]), i+1) || scale(abs(w + v[i]), i+1);
+}
+
+int main()
+{
+  ios_base::sync_with_stdio(false);
+  cin.tie(NULL); cout.tie(NULL);
+
+  cin >> N;
+
+  for(int i = 0; i < N; i++)
+  {
+    int tmp;
+    cin >> tmp;
+    v.push_back(tmp);
+  }
+
+  int M;
+  cin >> M;
+
+  memset(cache, -1, sizeof(cache));
+
+  while(M--)
+  {
+    int tmp;
+    cin >> tmp;
+
+    if(scale(tmp, 0) == 1) cout << 'Y' << " ";
+    else cout << 'N' << " ";
+  }
+}
