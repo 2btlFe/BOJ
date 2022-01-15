@@ -1,0 +1,55 @@
+/*
+조합 문제
+boj 1007 벡터 매칭
+벡터의 성질에 맞게 그냥 20C10*10C10*(1/2) = 92378번 해주면 된다.
+
+완전 탐색으로 풀어도 괜찮으면 그냥 믿고 하자
+괜히 dp로 풀려고 하지 말고
+*/
+
+#include<bits/stdc++.h>
+
+using namespace std;
+
+const int INF =  987654321;
+int x[21];
+int y[21];
+int N;
+double ans;
+
+void vectorMin(int i, int plus, int minus, int X, int Y) {
+  if(i == N) {
+    double dx = (double)X;
+    double dy = (double)Y;
+    ans = fmin(ans, sqrt(pow(dx,2.0)+ pow(dy,2.0)));
+    return;
+  }
+
+  if(plus) vectorMin(i+1, plus-1, minus, X+x[i], Y+y[i]);
+  if(minus) vectorMin(i+1, plus, minus - 1, X-x[i], Y-y[i]);
+
+  return;
+}
+
+int main() {
+  int T;
+  cin >> T;
+
+  while(T--) {
+    cin >> N;
+
+    int tx, ty;
+    for(int i = 0; i < N; i++) {
+      cin >> tx >> ty;
+      x[i] = tx;
+      y[i] = ty;
+    }
+
+    ans = INF;
+    vectorMin(0, N/2, N/2, 0, 0);
+
+    printf("%.9f\n", ans);
+  }
+}
+
+
