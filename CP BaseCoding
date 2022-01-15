@@ -1,0 +1,21 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+typedef long long ll;
+int main() {
+  //앞으로, scanf 쓰면 안됨
+  ios_base::sync_with_stdio(false);
+  cin.tie(NULL);
+  //----------------------------------------------//
+  
+  int T;
+  while(T--) {
+  
+  
+  
+  
+  
+  }
+  return 0;
+}
