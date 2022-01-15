@@ -1,0 +1,52 @@
+/*
+boj10942 palindrome
+1) 펠린 드롬 검출하기 DP O(N^2)*O(1)
+2) 최솟값을 구하는 최적화 문제
+최적 부분 구조에 맞춰서 O(N)*O(N)으로 해결
+*/
+#include<bits/stdc++.h>
+
+using namespace std;
+
+const int INF = 987654321;
+int cache[2502][2502];
+int minCache[2502];
+string S;
+int sLen;
+
+int isPalin(int s, int e) {
+  //base case
+  if(s == e) return 1;
+  if(s+1 == e) return S[s] == S[e];
+
+  int &ret = cache[s][e];
+  if(ret != -1) return ret;
+
+  return ret = (S[s] == S[e]) && isPalin(s+1, e-1);
+}
+
+int minPal(int s) {
+  //base case
+  if(s == S.size()) return 0;
+
+  int &ret = minCache[s];
+  if(ret != -1) return ret;
+
+  ret = INF;
+  int e;
+  for(e = S.size() - 1; e >= s; e--) {
+    if(isPalin(s, e) == 1) {
+      ret =  min(ret, 1 + minPal(e+1)); 
+    } 
+  }
+  return ret;
+}
+
+int main() {
+  memset(cache, -1, sizeof(cache));
+  memset(minCache, -1, sizeof(minCache));
+  cin >> S;
+  cout << minPal(0);
+}
+
+
