@@ -1,5 +1,5 @@
 /*
-boj10942 palindrome
+boj1509 Palindrome Division
 1) 펠린 드롬 검출하기 DP O(N^2)*O(1)
 2) 최솟값을 구하는 최적화 문제
 최적 부분 구조에 맞춰서 O(N)*O(N)으로 해결
