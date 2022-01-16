@@ -1,0 +1,43 @@
+/*
+boj2293 동전1
+알고리즘: DP
+시간복잡도: O(nk)
+
+중복되는 것이 나오는 냅색이라 생각했지만, 그렇지 않았다
+이 경우, 냅색으로 풀면 메모리 제한인 int형 10^6개를 넘게 된다
+그렇기 때문에, 무게를 기준으로 반복문을 돌리지 않고
+동전을 기준으로 반복문을 돌리면서 각각의 동전이 겹치는 경우를 배제해준다
+굳이 비유하면 배수로 이동하는 것이다.
+각 동전만 이용하면 배수로 이동하기 때문이다.
+*/
+
+#include<bits/stdc++.h>
+
+using namespace std;
+
+int main()
+{
+  int n, k;
+  cin >> n >> k;
+
+  int cost[102];
+  for(int i = 1; i <=n; i++) {
+    int tmp;
+    cin >> tmp;
+    cost[i] = tmp;
+  }
+
+  int dp[10001];
+  memset(dp, 0, sizeof(dp));
+  //기저 사례 w == 0 -> 1
+  dp[0] = 1;
+  
+  //duplication 허용 안 함 
+  for(int i = 1; i <= n; i++) { //각각의 동전에 대해서 
+    for(int j = cost[i]; j <= k; j++) {
+      dp[j] += dp[j-cost[i]];
+    }
+  }
+  cout << dp[k];
+}
+
