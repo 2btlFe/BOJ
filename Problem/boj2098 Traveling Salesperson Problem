@@ -1,0 +1,56 @@
+/*
+boj 2098 외판원 순회
+알고리즘: DP+비트마스크
+시간복잡도: O(N*2^N)*O(N) < O(N!)
+
+입력이 조합일 경우, 비트마스크를 이용해서 넣어준다
+k번째 자리가 1인지: memory & (1 << k)
+i번째 자리에 1을 넣는다: memory | (1 << i)
+*/
+
+#include<bits/stdc++.h>
+
+using namespace std;
+
+const int INF = 987654321;
+int N;
+int w[17][17];
+int cache[17][140000];
+
+int TCP(int start, int memory) {
+  //base case
+  if(memory == (1<<N) - 1) return w[start][0] == 0 ? INF : w[start][0];
+
+  int&ret = cache[start][memory];
+  if(ret != -1) return ret;
+
+  ret = INF;
+  for(int i = 0; i < N; i++) {
+    if(!w[start][i]) continue;
+    if(memory&(1 << i)) continue;
+    
+    ret = min(ret, TCP(i, memory|(1<<i)) + w[start][i]);
+  }
+  return ret;
+}
+
+int main()
+{
+  std::cin.tie(nullptr);
+  std::cout.tie(nullptr);
+  std::ios_base::sync_with_stdio(false);
+  memset(cache, -1, sizeof(cache));
+  cin >> N;
+
+  for(int i = 0; i < N; i++) {
+     for(int j = 0; j < N; j++) {
+      int tmp;
+      cin >> tmp;
+      w[i][j] = tmp;
+     }
+  }
+
+  cout << TCP(0, 1);
+
+  return 0;
+}
