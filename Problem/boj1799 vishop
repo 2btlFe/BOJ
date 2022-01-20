@@ -1,0 +1,73 @@
+/*
+boj1799 vishop
+algorithm: backtracking
+time complexity: O(2^(N/2)*(N/2))
+
+설명:
+그냥 백트래킹을 돌면 O(2^(N*N))이다
+하지만 이렇게 하면 시간 안에 문제를 못 풀게 된다
+왜냐면 최대 O(2^(10*10))의 경우가 되어 함수 호출 시간까지 고려했을 때
+시간이 오래 걸린다.
+
+이를 해결하기 위해 체스판의 특성을 생각한다.
+비숍은 검은색에서 흰색으로 넘어갈 수 없다
+즉 완전 다른 차원인 것이다. 고로, 검은색 칸과 흰색 칸에서 비숍이
+최대로 존재할 수 있는 경우를 찾아내고 서로 더하기만 하면 된다
+시간 복잡도가 O(2^(N/2)*(N/2))로 극적으로 줄어든다
+
+앞으로는 체스판의 흰색칸 검은색칸을 고려해야 한다.
+*/
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int ll;
+#define all(x) x.begin(), x.end()
+
+int board[11][11];
+int dg1[21];
+int dg2[11][11];
+int ans[2];
+int N;
+
+void vishop(int r, int c, int sum, int color) {
+  //기저 사례
+  //이렇게 넘어가거나, 그냥 좌표 자체를 처음부터 vector로 받아주면 된다
+  if(c  >= N) {
+    r++;
+    if(c%2 == 0) c = 1;
+    else c = 0;
+  }
+
+  if(r == N) {
+    ans[color] = max(ans[color], sum);
+    return;
+  }
+
+  int &d1 = dg1[r+c];
+  int &d2 = dg2[r-min(r,c)][c-min(r,c)];
+  if(board[r][c] && !d1 && !d2) {
+    d1 = d2 = 1;
+    vishop(r, c+2, sum+1, color);
+    d1 = d2 = 0;
+  }
+
+  vishop(r, c+2, sum, color);
+  return;
+}
+
+int main()
+{
+  std::cin.tie(nullptr);
+  std::cout.tie(nullptr);
+  std::ios_base::sync_with_stdio(false);
+  cin >> N;
+  for(int i = 0; i < N; i++) {
+    for(int j = 0; j < N; j++) {
+      cin >> board[i][j];
+    }
+  }
+  vishop(0, 0, 0, 0);
+  vishop(0, 1, 0, 1);
+  cout << ans[0] + ans[1];
+
+  return 0;
+}
