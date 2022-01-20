@@ -1,0 +1,45 @@
+/*
+boj1029 그림 교환
+알고리즘: 비트필드를 이용한 다이나믹프로그래밍
+시간복잡도: O(N*2^N)*O(N)
+
+TCP랑 똑같은 문제다. 다만, 이제 경우의 수(value = 1)와 최적화를 합친 
+*/
+
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int ll;
+#define all(x) x.begin(), x.end()
+int N;
+int cost[16][16];
+int cache[16][10][1<<15];
+
+int exchange(int now, int price, int own) {
+  //base case
+  if(own == (1<<N) - 1) return 1;
+
+  int &ret = cache[now][price][own];
+  if(ret != -1) return ret;
+
+  ret = 1;
+  int cand = 0;
+  for(int i = 1; i < N; i++) {
+    if((own & 1<<i) || cost[now][i] < price) continue;
+    cand = max(cand, exchange(i, cost[now][i], own|(1<<i)));
+  }
+  return ret + cand;
+}
+
+int main() {
+  memset(cache, -1, sizeof(cache));
+ 
+  cin >> N;
+  for(int i = 0; i < N; i++) {
+    for(int j = 0; j < N; j++) {
+      scanf("%1d", &cost[i][j]);
+    }
+  }
+
+  cout << exchange(0, 0, 1<<0);
+}
+
