@@ -1,0 +1,31 @@
+/*
+boj9461 파도반 수열
+알고리즘: dp
+시간복잡도: O(n);
+그냥 한번 하고 계속 뽑아 쓸 수 있으면
+한번만 하고 그냥 뽑아쓰자
+n이 100이라서 무리도 없다
+
+그리고 이렇게 더해가는 문제는 ll을 쓰자
+*/
+
+
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+
+int main() {
+  int t;
+  cin >> t;
+  
+  ll dp[101] = {0, 1, 1, 1, 2, 2, 3};
+  for(int i = 7; i < 101; i++) {
+    dp[i] = dp[i-1] + dp[i-5];
+  }
+  
+  int n;
+  while(t--) {
+    cin >> n; 
+    cout << dp[n] << '\n';
+  }
+}
