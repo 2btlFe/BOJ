@@ -1,0 +1,42 @@
+/*
+boj2225 Decompose
+algorithm: DP
+time complexity: O(NK)*O(N)
+
+그냥 정석으로 풀면 풀리는 문제
+*/
+
+#include<bits/stdc++.h>
+using namespace std;
+#define all(x) x.begin(), x.end()
+typedef long long ll;
+
+int N, K;
+int M = 1e9;
+int cache[201][201];
+
+int add(int n, int k) {
+  //base case
+  if(k == K) return (n == N);
+
+  //memoization
+  int& ret = cache[n][k];
+  if(ret != -1) return ret;
+
+  //recursion
+  ret = 0;
+  for(int i = 0; i <= N; i++) {
+    int nxtn = n + i;
+    if(nxtn <= N) ret = (ret +  add(nxtn, k + 1)%M)%M;
+  }
+
+  return ret % M;
+}
+
+int main() {
+  memset(cache, -1, sizeof(cache));
+  cin >> N >> K;
+
+  cout << add(0, 0);
+
+}
