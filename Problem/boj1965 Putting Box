@@ -1,0 +1,50 @@
+/*
+boj1965 Putting Box
+algorithm: DP
+time complexity: O(N)*O(N)
+
+lis DP는 진짜 확실하게 외워야 한다
+정의를 정확하게 하는 것이 문제 풀 때 안 헷갈린다
+*/
+
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+
+int cache[1002];
+int box[1002];
+int N;
+const int NEGINF = -1;
+
+//definition: n보다 큰 수부터 시작해서 넣을 수 있는 상자의 최대 갯수
+int lis(int n) {
+  //base case
+  if(n == N) return 1;
+
+  //memoization
+  int & ret = cache[n];
+  if(ret != -1) return ret;
+
+  ret = 1; //ownself
+  for(int i = n + 1; i <= N; i++) {
+    if(box[n] < box[i]) {
+      int cand = 1 + lis(i);
+      ret = max(ret, cand);
+    }
+  }
+
+  return ret;
+}
+
+
+int main() {
+  memset(cache, -1, sizeof(cache));
+  box[0] = NEGINF;
+
+  cin >> N;
+  for(int i = 1; i <= N; i++) {
+    cin >> box[i];
+  }
+
+  cout << lis(0) - 1;
+}
