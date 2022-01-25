@@ -1,0 +1,49 @@
+/*
+boj1890 jump
+algorithm: DP
+time complexity: O(n^2)*O(1)
+
+귀찮아서 영역을 넘어가는 값도 넘겨줬더니
+메모리제한에 걸렸다
+이런 경우를 애초에 배제해줘야 한다.
+*/
+
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+
+int board[101][101];
+ll cache[101][101];
+int n;
+ll path(int y, int x){
+  //base case
+  if(y == n -1 && x == n - 1) return 1;
+
+  //memoization
+  ll &ret = cache[y][x];
+  if(ret != -1) return ret;
+
+  //recursion
+  ret = 0;
+  int ny = y + board[y][x];
+  int nx = x + board[y][x];
+  if(ny >= 0 && ny < n ) ret += path(ny, x);
+  if(nx >= 0 && nx < n ) ret += path(y, nx);
+
+  return ret;
+}
+
+
+int main() {
+  memset(cache, -1, sizeof(cache));
+  
+  cin >> n;
+
+  for(int i = 0; i < n; i++) {
+    for(int j = 0; j < n; j++) {
+      cin >> board[i][j];
+    }
+  }
+
+  cout << path(0, 0);
+}
