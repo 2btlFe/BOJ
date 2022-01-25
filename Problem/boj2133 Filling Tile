@@ -1,0 +1,42 @@
+/*
+boj2133 타일채우기
+algorithm: DP
+time complexity: O(n)*O(n/2)
+
+타일 채우기 스킬 알아두자 
+
+반복문을 어쩔 수 없이 돌려야 하면
+그냥 돌리자
+코딩 대회는 accepted 만 받으면 된다
+*/
+
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+int cache[31];
+
+int tiling(int n) {
+  //base case
+  if(n == 0) return 1;
+  else if(n <= 1) return 0;
+
+  //memoization
+  int &ret = cache[n];
+  if(ret != -1) return ret;
+
+  //recursion
+  ret = 0;
+  ret += 3*tiling(n - 2);
+  for(int i = 4; i <= n; i+=2){
+    ret += 2 * tiling(n - i);
+  };
+
+  return ret;
+}
+
+int main() {
+  memset(cache, -1, sizeof(cache));
+  int N;
+  cin >> N;
+  cout << tiling(N); 
+}
