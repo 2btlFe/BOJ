@@ -1,0 +1,52 @@
+/*
+boj2096 GoDown
+algorithm: DP - iteration
+time complexity: O(N)
+
+Recursion으로 풀면 메모리 초과가 발생한다
+이 문제는 sliding window를 써야 한다
+*/
+
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+
+int main() {
+  std::cin.tie(nullptr);
+  std::ios_base::sync_with_stdio(false);
+
+  int dpMax[2][3];
+  int dpMin[2][3];
+  int board[100001][3];
+
+  int n;
+  cin >> n;
+
+  for(int i = 1; i <= n; i++) {
+    for(int j = 0; j < 3; j++) {
+      cin >> board[i][j];
+    }
+  }
+
+  //basecase
+  for(int x = 0; x < 3; x++) dpMax[n%2][x] = dpMin[n%2][x] = board[n][x];
+
+  //iteration
+  for(int y = n-1; y >= 0; y--) {
+    int py = (y+1)%2;
+    for(int x = 0; x < 3; x++) {
+      int &retMax = dpMax[y%2][x] = dpMax[py][x] + board[y][x];
+      int &retMin = dpMin[y%2][x] = dpMin[py][x] + board[y][x];
+      if(x - 1 >= 0) {
+        retMax = max(retMax, dpMax[py][x-1] + board[y][x]);
+        retMin = min(retMin, dpMin[py][x-1] + board[y][x]);
+      }
+      if(x + 1 <= 2) {
+        retMax = max(retMax, dpMax[py][x+1] + board[y][x]);
+        retMin = min(retMin, dpMin[py][x+1] + board[y][x]);
+      }
+    }
+  }
+
+  cout << dpMax[0][1] << " " << dpMin[0][1];
+}
