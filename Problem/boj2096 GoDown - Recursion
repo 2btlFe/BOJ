@@ -1,0 +1,73 @@
+/*
+boj2096 GoDown
+algorithm: DP - recursion
+time complexity: O(N)*O(1)
+
+Recursion으로 풀면 메모리 초과가 발생한다
+이 문제는 sliding window를 써야 한다
+*/
+
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+
+const int INF = 987654321;
+int cache[100002][3];
+int board[100002][3];
+int N;
+
+//Definition : (y,x)에서 밑으로 내려갈 때 얻을 수 있는 값의 최소
+int goDownMin(int y, int x) {
+  //basecase
+  if(y == N) return board[y][x];
+
+  //memoization
+  int &ret = cache[y][x];
+  if(ret != -1) return cache[y][x];
+
+  //recursion
+  ret = INF;
+  for(int i = -1; i < 2; i++) {
+    int ny = y + 1;
+    int nx = x + i;
+    if(nx < 0 || nx > 2) continue;
+    ret = min(ret, board[y][x] + goDownMin(ny, nx));
+  }
+  return ret;
+}
+
+//Definition : (y,x)에서 밑으로 내려갈 때 얻을 수 있는 값의 chleo
+int goDownMax(int y, int x) {
+  //basecase
+  if(y == N) return board[y][x];
+
+  //memoization
+  int &ret = cache[y][x];
+  if(ret != -1) return cache[y][x];
+
+  //recursion
+  ret = -1;
+  for(int i = -1; i < 2; i++) {
+    int ny = y + 1;
+    int nx = x + i;
+    if(nx < 0 || nx > 2) continue;
+
+    ret = max(ret, board[y][x] + goDownMax(ny, nx));
+  }
+  return ret;
+}
+
+int main() {
+  memset(cache, -1, sizeof(cache));
+  cin >> N;
+
+  for(int i = 1; i <= N; i++) {
+    for(int j = 0; j < 3; j++) {
+      cin >> board[i][j];
+    }
+  }
+
+  cout << goDownMax(0, 1) << " ";
+  memset(cache, -1, sizeof(cache));
+  cout << goDownMin(0, 1);
+}
