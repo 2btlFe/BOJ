@@ -1,0 +1,47 @@
+/*
+boj1965 PassCode
+algorithm: DP
+time complexity: O(N)*O(1)
+
+예외 처리가 생각보다 까다라웠다 -> 
+if(n >= S.size() - 1) return (S[n] != '0');
+이걸 모르면 쉽게 풀 수 없다 
+
+정의는 쉽다
+*/
+
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+
+const int M = 1000000;
+int cache[5001];
+string S;
+
+//definition : n부터 시작하는 가짓수
+int decoding(int n) {
+  //base case
+  if(n >= S.size() - 1) return (S[n] != '0');
+
+  //memoization
+  int& ret = cache[n];
+  if(ret != -1) return ret;
+
+  //recursion
+  ret = 0;
+  int cand = S[n] - '0';
+  if(cand != 0) {
+    ret = (ret + decoding(n + 1))%M;
+      
+    if(cand == 1 || (cand == 2 && S[n + 1] <= '6')) {
+      ret = (ret + decoding(n + 2))%M;
+    }
+  }
+  return ret%M;
+}
+
+int main() {
+  memset(cache, -1, sizeof(cache));
+  cin >> S;
+  cout << decoding(0);
+}
