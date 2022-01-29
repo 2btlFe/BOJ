@@ -1,0 +1,51 @@
+/*
+boj2631 lineUp
+algorithm: LIS_DP
+time complexity: O(N)*O(N)
+
+LIS-DP의 정석이다
+*/
+
+#include<bits/stdc++.h>
+using namespace std;
+#define all(x) x.begin(), x.end()
+typedef long long ll;
+
+const int NEGINF = -987654321;
+vector<int> order = {NEGINF,};
+int N;
+int cache[202];
+
+//Definition: n부터 시작하는 최대 갯수
+int lis(int n) {
+  //base case
+  if(n == N) return 1;
+
+  //memoization
+  int& ret = cache[n];
+  if(ret != -1) return ret;
+
+  //recurcion
+  ret = 1;
+  for(int i = n + 1; i <= N; i++) {
+    if(order[i] > order[n]) 
+      ret = max(ret, lis(i) + 1);
+  }
+
+  return ret;
+}
+
+int main() {
+  std::cin.tie(nullptr);
+  std::ios_base::sync_with_stdio(false);
+
+  memset(cache, -1, sizeof(cache));
+  cin >> N;
+  for(int i = 1; i <= N; i++) {
+    int tmp;
+    cin >> tmp;
+    order.push_back(tmp);
+  }
+
+  cout << N - (lis(0) - 1);
+}
