@@ -1,0 +1,47 @@
+/*
+boj2302
+algorithm: DP - counting
+time complexity: O(N)*O(1)
+
+개수 세기, 특히 tiling 같은 느낌은 base case가 
+범위를 넘어가는 것도 포함해줘야 한다 
+*/
+
+#include<bits/stdc++.h>
+using namespace std;
+#define all(x) x.begin(), x.end()
+typedef long long ll;
+
+int N, M;
+int fix[41];
+int cache[41];
+
+//Definition: s번째 자리에서 선택할 수 있는 경우의 수 (1 <= s <= N)
+int seat(int s) {
+  //base case
+  if(s >= N) return 1;
+
+  //memoization
+  int& ret = cache[s];
+  if(ret != -1) return ret;
+
+  //recursion
+  ret = seat(s + 1);
+  if(!fix[s] && !fix[s+1]) ret += seat(s+2); 
+
+  return ret;
+}                                                                      
+int main() {
+  std::cin.tie(nullptr);
+  std::ios_base::sync_with_stdio(false);
+  memset(cache, -1, sizeof(cache));
+
+  cin >> N >> M;
+  for(int i = 0; i < M; i++) {
+    int tmp;
+    cin >> tmp;
+    fix[tmp] = 1;
+  }
+
+  cout << seat(1);
+}
