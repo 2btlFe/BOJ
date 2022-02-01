@@ -1,0 +1,58 @@
+/*
+boj2228 Break the interval
+algorithm: DP - psum
+time complexity: O(N*N/2)*O(N)
+
+연속핪을 쓰므로, psum을 써야 한다
+또한, 음수로 memoization할 때는 계속 return하게 될 수도 있으므로
+  if(m == 0) return 0;
+  if(s > N) return NEGINF+1;
+  이런 식으로 1 더해서 처리해주자
+*/
+
+#include<bits/stdc++.h>
+using namespace std;
+#define all(x) x.begin(), x.end()
+typedef long long ll;
+
+const int NEGINF = -987654321;
+int cache[52][102];
+int N, M;
+int psum[101];
+int partSum(int m, int s) {
+  //base case
+  if(m == 0) return 0;
+  if(s > N) return NEGINF+1;
+
+  //memoization
+  int& ret = cache[m][s];
+  if(ret != NEGINF) return ret;
+
+  //recursion
+  ret = partSum(m, s + 1); //넘어가기 
+  for(int e = s; e <= N; e++) {
+    ret = max(ret, partSum(m-1, e + 2) + psum[e] - psum[s-1]);
+  }
+
+  return ret;
+}
+
+int main() {
+  std::cin.tie(nullptr);
+  std::ios_base::sync_with_stdio(false);  
+
+  cin >> N >> M;
+  for(int i = 1; i <= M; i++) {
+    for(int j =1; j <= N; j++) {
+      cache[i][j] = NEGINF;
+    }
+  }
+
+  for(int i = 1; i <= N; i++) {
+    int tmp;
+    cin >> tmp;
+    psum[i] = psum[i-1] + tmp;
+  }
+
+  cout << partSum(M, 1); //M개의 부분의 합
+}
