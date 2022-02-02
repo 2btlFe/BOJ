@@ -1,0 +1,53 @@
+/*
+boj5014 StartLink
+algorithm: BFS
+time complexity: O(F)
+
+그냥 memoization으로 BFS 돌린다
+*/
+#include<bits/stdc++.h>
+using namespace std;
+#define all(x) x.begin(), x.end()
+typedef long long ll;
+
+int F, S, G, U, D;
+int cache[1000001];
+
+void bfs() {
+  queue<int> q;
+  q.push(S);
+  cache[S] = 0;
+
+  while(!q.empty()) {
+    int node = q.front();
+    q.pop();
+    //base case
+    if(node == G) break;
+
+    int uNode = node + U;
+    if(uNode <= F && cache[uNode] == -1) {
+      cache[uNode] = cache[node] + 1;
+      q.push(uNode);
+    }
+
+    int dNode = node - D;
+    if(dNode >= 1 && cache[dNode] == -1) {
+      cache[dNode] = cache[node] + 1;
+      q.push(dNode);
+    }
+  }
+  return;
+}
+
+int main() {
+  std::cin.tie(nullptr);
+  std::ios_base::sync_with_stdio(false);  
+  memset(cache, -1, sizeof(cache));
+
+  cin >> F >> S >> G >> U >> D;
+
+  bfs();
+
+  if(cache[G] == -1) cout << "use the stairs";
+  else cout << cache[G];
+}
