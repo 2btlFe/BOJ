@@ -1,0 +1,55 @@
+/*
+boj2666 Moving Closet Door
+algorithm: DP - optimization
+time complexity: O(N^3);
+
+그냥 점화식 잘 짜면 풀리는 문제
+*/
+
+#include<bits/stdc++.h>
+using namespace std;
+#define all(x) x.begin(), x.end()
+typedef long long ll;
+
+int N;
+int cache[21][21][21];
+int orderLength;
+vector<int> v;
+
+//Definition: index 순번과 l,r이 열려있을 때, 최소 이동횟수 
+int wallDoor(int index, int l, int r)
+{
+  //base case 
+  if(index == orderLength) return 0;
+
+  //memoization
+  int &ret = cache[index][l][r];
+  if(ret != -1) return ret;
+
+  //recursion
+  int target = v[index];
+  ret = abs(l-target) + wallDoor(index+1, min(target, r), max(target,r));
+  ret = min(ret, abs(r - target) + wallDoor(index+1, min(target, l), max(target,l)));
+  return ret;
+}
+
+int main() {
+  std::cin.tie(nullptr);
+  std::ios_base::sync_with_stdio(false);  
+  memset(cache, -1, sizeof(cache));
+  
+  cin >> N;
+  int fl, fr;
+  cin >> fl >> fr;
+
+
+  cin >> orderLength;
+
+  for(int i = 0; i < orderLength; i++) {
+    int tmp;
+    cin >> tmp;
+    v.push_back(tmp);
+  }
+
+  cout << wallDoor(0, fl, fr);
+}
