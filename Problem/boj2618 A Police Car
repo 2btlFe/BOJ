@@ -1,0 +1,85 @@
+/*
+boj2618 A Police Car
+algorithm: DP - optimization & tracking
+time complexity: O(N^2);
+
+어차피 두 개의 인덱스중 하나는 현재 인덱스에서 하나 전 인덱스라는 
+생각을 하면 메모리를 N^3에서 N^2으로 줄일 수 있다 
+
+점화식 구성 자체는 어렵지 않다
+reconstruct도 순간 순간의 최적화 값과 같으면 출력, 아니면 그 외의 것을 출력하면
+되는 쉬운 tracking이었다
+
+아직 choice를 만드는 것은 못한다
+*/
+#include<bits/stdc++.h>
+using namespace std;
+#define all(x) x.begin(), x.end()
+typedef long long ll;
+
+int N, W;
+vector<pair<int, int> > v;
+int cache[1003][2][1003]; ///어차피 둘 중 하나는 index-1일 거다 그러니 다른 하나의 posindex만 기억하면 된다
+
+int police(int index, int p, int posIndex)
+{
+  //base case
+  if(index == W + 2) return 0;
+
+  //memoization
+  int& ret = cache[index][p][posIndex];
+  if(ret != -1) return ret;
+
+  //recursion
+  int y = v[index].first;
+  int x = v[index].second;
+
+  int cand1 = abs(y-v[posIndex].first) + abs(x-v[posIndex].second) + police(index+1, (p+1)%2, index-1);
+  int cand2 = abs(y-v[index-1].first) + abs(x-v[index-1].second) + police(index+1, p, posIndex);
+
+  if(cand1 < cand2) {
+    ret = cand1;
+  } 
+  else {
+    ret = cand2;
+  }
+
+  return ret;
+}
+
+void reconstruct(int index, int p, int pIndex) {
+  if(index == W+2) return;
+
+  int cand1 = abs(v[index].first-v[pIndex].first) + abs(v[index].second-v[pIndex].second) + police(index+1, (p+1)%2, index-1);
+  
+  //cout << police(index, p1, p2) << " " <<  cand1 << " " << cand2 << '\n';
+  
+  if(police(index, p, pIndex) == cand1) {
+    cout << p + 1 << '\n';
+    return reconstruct(index+1, (p+1)%2, index-1);
+  }
+  else {
+    cout << (p+1)%2 + 1 << '\n';
+    return reconstruct(index+1, p, pIndex);
+  }
+}
+
+int main() {
+  std::cin.tie(nullptr);
+  std::ios_base::sync_with_stdio(false);  
+  memset(cache, -1, sizeof(cache));
+
+  cin >> N >> W;
+
+  v.push_back({1,1});
+  v.push_back({N,N});
+
+  for(int i = 0; i < W; i++) {
+    int y, x;
+    cin >> y >> x;
+    v.push_back({y,x});
+  }
+
+  cout << police(2, 0, 0) << '\n';
+  reconstruct(2, 0, 0);
+}
