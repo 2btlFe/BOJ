@@ -1,0 +1,55 @@
+/*
+boj2644
+algorithm: BFS
+time complexity: O(N + M)
+
+그냥 BFS
+*/
+#include<bits/stdc++.h>
+using namespace std;
+#define all(x) x.begin(), x.end()
+typedef long long ll;
+
+vector<int> v[101];
+int cache[101];
+int N, M;
+int S, E;
+
+void bfs(){
+  queue<int> q;
+  q.push(S);
+  cache[S] = 0;
+
+  while(!q.empty()) {
+    int node = q.front();
+    q.pop();
+
+    //base case
+    if(node == E) return;
+
+    for(int next : v[node]) {
+      if(cache[next] != -1) continue;
+
+      cache[next] = cache[node] + 1;
+      q.push(next);
+    }
+  }
+ return;
+}
+
+int main() {
+  std::cin.tie(nullptr);
+  std::ios_base::sync_with_stdio(false);  
+  memset(cache, -1, sizeof(cache));
+
+  cin >> N >> S >> E >> M;
+  for(int i = 0; i < M; i++) {
+    int x, y;
+    cin >> x >> y;
+    v[x].push_back(y);
+    v[y].push_back(x);
+  }
+
+  bfs();
+  cout << cache[E];
+}
