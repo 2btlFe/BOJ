@@ -1,0 +1,53 @@
+/*
+boj2157 Travel
+algorithm: DP - Optimization
+time complexity: O(K)
+
+모든 항로를 확인하는 것만큼 걸림
+
+0도 답이 될 수 있으므로, 0으로 초기화 하고 정리하는 것이 아니라
+도착 못할 경우를 대비해서 ret = NEGINF로 설정해야 한다
+
+처음 초기화하는 값을 신경써서 정해줘야 한다 
+*/
+#include<bits/stdc++.h>
+using namespace std;
+#define all(x) x.begin(), x.end()
+typedef long long ll;
+
+const ll NEGINF = -987654321;
+int N, M, K;
+vector<pair<int, int> > v[302];
+int cache[302][302];
+
+int maxPlaneRoad(int m, int s) {
+  //base case
+  if(m >= 0 && s == N) return 0;
+  if(m == 0 && s != N) return NEGINF;
+
+  //memoization
+  int& ret = cache[m][s];
+  if(ret != -1) return ret;
+
+  //recursion
+  ret = NEGINF;
+  for(auto item : v[s]) {
+    ret = max(ret, item.second + maxPlaneRoad(m - 1, item.first));
+  }
+  return ret;
+}
+
+int main() {
+  std::cin.tie(nullptr);
+  std::ios_base::sync_with_stdio(false);  
+  memset(cache, -1, sizeof(cache));
+  cin >> N >> M >> K;
+
+  int a, b, c;
+  for(int i = 0; i < K; i++) {
+    cin >> a >> b >> c;
+    if(a < b) v[a].push_back({b, c});
+  }
+
+  cout << maxPlaneRoad(M-1, 1);
+}
