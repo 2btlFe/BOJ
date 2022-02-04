@@ -1,0 +1,68 @@
+/*
+boj1514 Lock
+알고리즘: DP
+시간복잡도: O(N*10^3)*O(3);
+
+설명: recursion에서 한번에 for문을 돌리지 말고 
+나눠서 돌려야지 답이 나온다
+
+-> 이유는 나도 잘 모르겠다
+데이터가 약하다라고 표현했다
+
+그런가 보다
+*/
+
+#include<bits/stdc++.h>
+using namespace std;
+#define all(x) x.begin(), x.end()
+typedef long long ll;
+
+const int M = 987654321;
+string S, G;
+int cache[110][11][11][11];
+int N;
+
+int rotate(int num, int dif) {
+  num += dif;
+  if(num < 0) return num += 10;
+  if(num >= 10) return num-=10;
+
+  return num;
+}
+
+int lock(int index, int s0, int s1, int s2) {
+  //base case
+  if(index == N) return 0;
+
+  //memoization
+  int& ret = cache[index][s0][s1][s2];
+  if(ret != -1) return ret;
+
+  //recursion
+  ret = M;
+  
+  if(s0 == (G[index] - '0')) ret = min(ret, lock(index+1, s1, s2, S[index+3]-'0'));
+
+  for(int i = 1; i <= 3; i++) {
+    ret = min(ret, 1 + lock(index, rotate(s0, i), s1, s2));
+    ret = min(ret, 1 + lock(index, rotate(s0, i), rotate(s1, i), s2));
+    ret = min(ret, 1 + lock(index, rotate(s0, i), rotate(s1, i), rotate(s2, i)));
+    
+    ret = min(ret, 1 + lock(index, rotate(s0, -i), s1, s2));
+    ret = min(ret, 1 + lock(index, rotate(s0, -i), rotate(s1, -i), s2));
+    ret = min(ret, 1 + lock(index, rotate(s0, -i), rotate(s1, -i), rotate(s2, -i)));
+  }
+
+  return ret;
+}
+
+int main() {
+  memset(cache, -1 ,sizeof(cache));
+  cin >> N;
+  
+  cin >> S;
+  cin >> G;
+  S += "000";
+
+  cout << lock(0, S[0] - '0', S[1] - '0', S[2] - '0');
+}
