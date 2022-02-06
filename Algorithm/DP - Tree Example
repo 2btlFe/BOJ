@@ -1,0 +1,84 @@
+/*
+boj1949 Great Vilage
+Algorithm: DP - Tree
+Time Complexity: O(N)
+
+Explanation:
+상황이 여러가지가 있었다
+from now to
+ o    x   o/x
+ x    o/x x/o
+
+하지만 최댓값 구하기라는 측면에서 볼 때,
+1)이전 노드가 우수 마을이었다면 다음 노드는 무조건 우수 마을이 아니면 되고
+
+2)이전 노드가 우수 마을이 아니었다면, 다음 노드는 우수든 일반 이든 둘 중에 선택만 하면 됐다
+
+만약, 계속해서 일반이 3번 연속 나온다면 최댓값을 구하는 dp에서 자연스럽게 무시됐을 것이다.
+ 
+왜냐면 당연히 (한번이라도 선택) > (3번 연속 선택을 안하는 경우) 이기 때문이다.
+
+트리 dp의 경우
+1) 부모 노드를 넘겨줘야 한다
+2) 기저 사례는 리프 노드가 된다
+3) 자식 노드 중에 부모 노드가 있으면 무시한다
+
+*/
+#include<bits/stdc++.h>
+
+using namespace std;
+
+typedef long long ll;
+vector<int> v[10001];
+int cost[10001];
+int cache[10001][2];
+
+//state 0: 선택 1: 선택 안 함 
+int vilage(int now, int from, int state) {
+  //memoization
+  int& ret = cache[now][state];
+  if(ret != -1) return ret;
+
+  //recursion
+  ret = 0;
+  if(state == 1) {
+    for(int child : v[now]) {
+      if(child == from) continue;
+      ret += vilage(child, now, 0);
+    }
+    ret += cost[now];
+  }
+  else {
+    for(int child : v[now]) {
+      if(child == from) continue;
+      int cand1 = vilage(child, now, 0);
+      int cand2 = vilage(child, now, 1);
+      ret += max(cand1, cand2);
+    }
+  }
+  return ret;
+}
+
+int main() {
+  //앞으로, scanf 쓰면 안됨
+  ios_base::sync_with_stdio(false);
+  cin.tie(NULL);
+  //----------------------------------------------
+  memset(cache, -1, sizeof(cache));
+
+  int N;
+  cin >> N;
+
+  for(int i = 1; i <= N; i++) {
+    cin >> cost[i];
+  }
+
+  for(int i = 0; i < N-1; i++) {
+    int a,b;
+    cin >> a >> b;
+    v[a].push_back(b);
+    v[b].push_back(a);
+  }
+ 
+  cout << max(vilage(1, 0, 1), vilage(1, 0, 0));
+}
