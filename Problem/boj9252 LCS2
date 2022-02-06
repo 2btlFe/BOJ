@@ -1,0 +1,67 @@
+/*
+boj9252 LCS2
+Algorithm: DP - LongestCommonSubsquence
+Time Complexity: O(N^2)
+
+Explanation:
+LCS -> Longest Common string 은 이중 for문을 돌려야 한다
+LCS -> Longest Common subsequence는 그냥 +1해주고 recursion 돌리면 된다
+reconstruct도 쉽다
+*/
+#include<bits/stdc++.h>
+
+using namespace std;
+typedef long long ll;
+
+string O, G;
+int cache[1001][1001];
+
+int lcs2(int o, int g) {
+  
+  //base case
+  if(o >= O.size() || g >= G.size()) return 0;
+  
+  //memoization
+  int& ret = cache[o][g];
+  if(ret != -1) return ret;
+
+  //recursion
+  ret = 0;
+  if(O[o] == G[g]) {
+    ret = max(ret, 1 + lcs2(o+1, g+1));
+  }
+  else {
+    ret = max({ret, lcs2(o+1, g), lcs2(o, g+1)});
+  }
+  return ret;
+}
+
+void reconstruct(int o, int g) {
+  if(o >= O.size() || g >= G.size()) return;
+
+  if(O[o] == G[g]) {
+    if(lcs2(o,g) == 1 + lcs2(o+1, g+1)){
+      cout << O[o];
+      reconstruct(o+1, g+1);
+    }
+  }
+  else {
+    if(lcs2(o+1, g) > lcs2(o, g+1)) {
+      reconstruct(o+1, g);
+    }
+    else reconstruct(o, g+1);
+  }
+  return;
+}
+
+int main() {
+  //앞으로, scanf 쓰면 안됨
+  ios_base::sync_with_stdio(false);
+  cin.tie(NULL);
+  memset(cache, -1, sizeof(cache));
+  //----------------------------------------------
+
+  cin >> O >> G;
+  cout << lcs2(0, 0) << '\n';
+  reconstruct(0, 0);
+}
