@@ -1,0 +1,56 @@
+/*
+boj17071 Hide and Seek 5
+Algorithm: BFS - Odd/Even
+time complexity: O(N)
+Explaination: 
+bfs cache에 홀짝을 나눠서 넣어준다
+벽 부수고 가기에서 벽을 부쉈는지 여부를 넣어준 것처럼
+
+홀수 시간에 도착했는지 
+짝수 시간에 도착했는지 
+구별하며 진행한다
+*/
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int ll;
+#define len(x) (int) (x).size()
+#define all(x) x.begin(), (x).end()
+#define endl "\n"
+ 
+const int length = 500001;
+
+int main()
+{
+  std::cin.tie(nullptr);
+  std::cout.tie(nullptr);
+  std::ios_base::sync_with_stdio(false);
+  
+  int N, K;
+  cin >> N >> K;
+
+  int d[length][2];
+  memset(d, -1, sizeof(d));
+  queue<pair<int, int> > q;
+  q.push({N, 0});
+  d[N][0] = 0;
+
+  while(!q.empty()) {
+    int x = q.front().first;
+    int flag = q.front().second;
+    q.pop();
+    for(int nx : {x + 1, x - 1, x*2}) {  //vector를 바로 넣어주자
+      if(nx >= length || nx < 0 || d[nx][1-flag] != -1) continue;
+      q.push({nx,1-flag});
+      d[nx][1-flag] = d[x][flag] + 1;
+    }
+  }
+  
+  int ret = length;
+  for(int t = 0; t <= length; t++) {
+    int nk = K + t*(t+1)/2;
+    if(nk >= length) break;
+    if(d[nk][t%2] <= t) {ret = t; break;} //최솟값 보장 greedy
+  }
+  if(ret == length) cout << -1;
+  else cout << ret;
+}
