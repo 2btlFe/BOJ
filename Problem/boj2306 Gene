@@ -1,0 +1,60 @@
+/*
+boj2306 Gene
+algorithm: DP
+time complexity: O(n^3)
+explaination:
+그냥 dp 조건 쭉 적으면 된다
+
+처음에는 각각 나눠서 했는데(gene, sumGene)
+그러면 3조각 묶음을 대비할 수 없었다
+
+그냥 처음부터 두 가지를 비교하면 됐다
+*/
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int ll;
+#define len(x) (int) (x).size()
+#define all(x) x.begin(), (x).end()
+#define endl "\n"
+ 
+string S;
+int cache[501][501]; 
+//s부터 e까지 최대 gene의 개수
+int gene(int s, int e) {
+  //base case
+  if(s >= e) return 0;
+
+  //memoization
+  int & ret = cache[s][e];
+  if(ret != -1) return ret;
+
+  //recursion
+  ret = 0;
+  //2nd condition
+  if(S[s] == 'a' && S[e] == 't') ret = max(ret, gene(s+1, e-1) + 2);
+  
+  if(S[s] == 'g' && S[e] == 'c') ret = max(ret, gene(s+1, e-1)+2);
+
+  //혹시 몰라서 넣었지만 필요없다
+  //ret = max({ret, gene(s+1, e), gene(s, e-1)});
+  
+  //3rd contition
+  for(int m = s; m <= e-1; m++) {
+    ret = max(ret, gene(s,m) + gene(m+1, e));
+  }
+
+  return ret;
+}
+
+
+
+int main()
+{
+  std::cin.tie(nullptr);
+  std::cout.tie(nullptr);
+  std::ios_base::sync_with_stdio(false);
+  memset(cache, -1, sizeof(cache));
+  
+  cin >> S;
+  cout << gene(0, S.size() - 1);
+}
