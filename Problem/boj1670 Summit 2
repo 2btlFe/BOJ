@@ -1,0 +1,54 @@
+/*
+BOJ1670 Summit
+Algorithm: DP - Counting, Combinatorics
+Time Complexity: O(n)*O(n/2)
+Explaination: 
+그냥 경우의 수 세기 문제다
+리팩토링을 조금 더 잘하려면 1/2를 잘해야 한다
+1) 체스판
+2) 짝수만 가능한 경우
+3) 분할 정복
+
+%연산은 줄일 수 있으면 최대한 줄이자
+시간이 오래걸린다
+물론 많이 쓰는 것이 안전하긴 하다
+*/
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int ll;
+#define len(x) (int) (x).size()
+#define all(x) x.begin(), (x).end()
+#define endl "\n"
+
+const int M = 987654321;
+ll cache[10001];
+
+//Definition: n명이 있을 때 겹치지 않게 악수하는 방법의 수
+ll table(int n) {
+  //base case
+  if(!n) return 1;
+
+  //memoization
+  ll& ret = cache[n];
+  if(ret != -1) return ret;
+
+  //recursion
+  ret = 0;
+  for(int i = 2; i <= n; i+=2) {  //V2. 2배 이상 시간이 줄어든다
+    ret = (ret + (table(i - 2) * table(n - i)))%M;  //V3. %연산을 줄이니까 시간이 더 줄어든다
+  }
+
+  return ret;
+}
+
+int main()
+{
+  std::cin.tie(nullptr);
+  std::cout.tie(nullptr);
+  std::ios_base::sync_with_stdio(false);
+  memset(cache, -1 ,sizeof(cache));
+
+  int N;
+  cin >> N;
+  cout << table(N);
+}
