@@ -1,0 +1,76 @@
+/*
+boj11266 CutVertex
+Algorithm: DFS
+TimeComplexity: O(V);
+Explaination:
+
+종만북에 나온 절단점 찾기 알고리즘을 썼다
+
+약간 다른 부분은 종만북은 주어진 그래프가 연결된 하나의 컴포넌트라고 가정했고
+이 문제는 하나의 컴포넌트가 아닐 수도 있음을 시사했다.
+
+그러므로 dfs()만 하는 것이 아닌 dfsAll() 개념으로 적용해야 했다
+*/
+
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int ll;
+#define len(x) (int) (x).size()
+#define all(x) x.begin(), (x).end()
+#define endl "\n"
+
+bool isCutVertex[10002];
+vector<int> v[10002];
+int discovered[10002];
+int counter;
+
+int findCutVertex(int here, bool isRoot) {
+    discovered[here] = counter++;
+    int ret = discovered[here];
+    //recursion start
+    int children = 0;
+    for(int there : v[here]) {
+        if(discovered[there] == -1) {
+            children++;
+            int subtree = findCutVertex(there, 0); 
+            if(!isRoot && subtree >= discovered[here]) isCutVertex[here] = true;
+            ret = min(ret, subtree);
+        }
+        else ret = min(ret, discovered[there]);
+    }
+    //root
+    if(isRoot) isCutVertex[here] = (children >= 2); 
+    return ret;
+}
+
+int main()
+{
+    std::cin.tie(nullptr);
+    std::cout.tie(nullptr);
+    std::ios_base::sync_with_stdio(false);
+    memset(discovered, -1, sizeof(discovered));
+    
+    int V, E;
+    cin >> V >> E;
+    
+    int from, to;
+    for(int i = 0; i < E; i++) {
+        cin >> from >> to;
+        v[from].push_back(to);
+        v[to].push_back(from);
+    }
+    
+    for(int i = 1; i <= V; i++) {
+        if(discovered[i] == -1) findCutVertex(i, true);
+    }
+    
+    int sum = 0;
+    for(int i = 1; i <= V; i++) {
+        if(isCutVertex[i]) sum++;
+    }
+    cout << sum << endl;
+    
+    for(int i = 1; i <= V; i++) {
+        if(isCutVertex[i]) cout << i << " ";
+    }
+}
