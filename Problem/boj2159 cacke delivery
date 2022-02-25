@@ -1,0 +1,67 @@
+/*
+boj2159 Cacke Delivery
+Algorithm: DP
+Time Complexity: O(N)
+Explaination:
+그냥 평범하게 경우의 수 나눠서 
+DP하면 된다
+
+다만, ll범위까지 신경써야하기 때문에
+INF 가 9876543210이 되야 한다
+*/
+
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long int ll;
+#define len(x) (int) (x).size()
+#define all(x) x.begin(), (x).end()
+#define endl "\n"
+
+int orient[5][2] = {{0, 0}, {-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+ll cache[100002][5];
+vector<pair<int, int> > v;
+
+const ll INF = 9876543210;
+int N;
+ll cake(int n, int pos) {
+    //base case
+    if(n == N) return 0;
+    
+    //memoization
+    ll& ret = cache[n][pos];
+    if(ret != -1) return ret;
+    
+    //recursion
+    int y = v[n].first + orient[pos][0];
+    int x = v[n].second + orient[pos][1];
+    
+    ret = INF;
+    for(int i = 0; i < 5; i++) {
+        int ny = v[n+1].first + orient[i][0];
+        int nx = v[n+1].second + orient[i][1];
+        
+        if(ny > 100000 || ny <= 0 || nx > 100000 || nx <= 0) continue;
+        
+        ll delta = abs(ny - y) + abs(nx - x);
+        ret = min(ret , cake(n+1, i) + delta);
+    }
+    return ret;
+}
+
+int main()
+{
+    std::cin.tie(nullptr);
+    std::cout.tie(nullptr);
+    std::ios_base::sync_with_stdio(false);
+    memset(cache, -1, sizeof(cache));
+    
+    cin >> N;
+    int y, x;
+    
+    for(int i = 0; i <= N; i++) {
+        cin >> y >> x;
+        v.push_back({y, x});
+    }
+    
+    cout << cake(0, 0);
+}
