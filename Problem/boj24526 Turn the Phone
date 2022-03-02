@@ -1,0 +1,66 @@
+/*
+boj24526 전화 돌리기
+Algorithm: DP+DFS  / Topology_Sort
+TimeComplexity: O(N+M)
+Explianition: 
+
+cycle 검출 + 역으로 DFS 해서 관련된 노드 모두 검출
+
+or
+
+애초에 간선을 역전 시킨 그래프에서 topology sort를 진행, degree가 0이 아닌 노드 찾기
+
+내가 애초에 했던 생각
+역방향 간선 뿐만 아니라 순방향, 교차 간선도 문제가 된다고 생각했지만
+
+전화를 한 사람에게만 넘기지 않는다
+문제를 정확하게 생각하는 것이 중요하다 
+*/
+
+#include <bits/stdc++.h>
+
+using namespace std;
+
+vector<int> e[100001];
+vector<int> re[100001];
+int dp[100001];
+int visited[100001];
+int finished[100001];
+
+void redfs(int here) {
+    dp[here] = 1;
+    for(int there : re[here]) {
+        if(!dp[there]) redfs(there);
+        dp[there] = 1;
+    }
+}
+
+//cycle 검출 : 역방향 간선 존재 확인  
+void dfs(int here) {
+    visited[here] = 1;
+    for(int there : e[here]) {
+        if(!visited[there]) dfs(there);
+        else if(!finished[there]) redfs(here);
+    }
+    finished[here] = 1;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    
+    int N, M;
+    cin >> N >> M;
+    
+    for(int i = 0; i < M; i++) {
+        int a, b;
+        cin >> a >> b;
+        e[a].push_back(b);
+        re[b].push_back(a);
+    }
+    for(int i = 1; i <= N; i++) if(!finished[i]) dfs(i); 
+    
+    int ret = 0;
+    for(int i = 1; i <= N; i++) if(!dp[i]) ret++;
+    cout << ret;
+}
