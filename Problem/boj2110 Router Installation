@@ -1,0 +1,74 @@
+/*
+boj2110 Router Installation
+Algorithm: Parametric_Search, Binary_Search
+TimeComplexity: O(Nlog(10^9)));
+Explaination:
+
+최적화 문제 결정 문제로 바꾸어 풀기
+parametric_search의 기본이 되는 생각이다.
+
+중간에 lower_bound를 넣어서 코드의 효율성을 더 높인다
+
+양쪽 끝 l과 r 에서 
+조건을 만족하는 mid를 찾아주면 된다
+
+
+기준이 되는 mid에서 
+0에서 시작해서 mid를 더해서 나오는 수보다 큰 최소 인덱스를 찾아낸다 (lower_bound)
+만약 인덱스가 v.end()-v.begin()에 도달 하는 순간 
+
+지금까지 누적된 양과 C를 비교해서 mid가 가능한지 확인한다 (결정 문제)
+*/
+
+#include<bits/stdc++.h>
+using namespace std;
+#define len(x) (int) (x).size()
+#define all(x) x.begin(), (x).end()
+#define endl "\n"
+using ll = long long;
+using pii = pair<int,int>;
+using pll = pair<ll,ll>;
+using vi = vector<int>;
+using vl = vector<ll>;
+template <typename T>
+using max_heap = priority_queue<T>;
+template <typename T>
+using min_heap = priority_queue<T, vector<T>, greater<T>>;
+#define fi first
+#define se second
+
+int main()
+{
+  std::cin.tie(nullptr);
+  std::cout.tie(nullptr);
+  std::ios_base::sync_with_stdio(false);
+  
+  ll N, C;
+  cin >> N >> C;
+  vector<ll> v(N);
+  for(ll& x : v) cin >> x;
+  sort(all(v));
+  
+  ll l = 1;
+  ll r = v.back();
+  ll ret;
+  
+  while(l <= r) {
+      ll mid = (l + r)/2;
+      
+      ll idx = 0;
+      ll tmp = 1;
+      while(idx < v.end() - v.begin()) {
+        idx = lower_bound(v.begin() + idx, v.end(), v[idx] + mid)- v.begin();  
+        if(idx < v.end() - v.begin()) tmp++;           
+      }
+      
+      if(tmp >= C) {
+          l = mid + 1;
+          ret = mid;
+      }
+      else r = mid - 1;
+  }
+  
+  cout << ret;
+}
