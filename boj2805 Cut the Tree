@@ -1,0 +1,66 @@
+/*
+boj2805 Cut the Tree
+Algorithm: Parametric_Search
+TimeComplexity: O(Nlog(M)));
+Explaination:
+
+최적화 문제 결정 문제로 바꾸어 풀기
+parametric_search의 기본이 되는 생각이다.
+
+중간에 lower_bound를 넣어서 코드의 효율성을 더 높인다
+
+양쪽 끝 l과 r 에서 
+조건을 만족하는 mid를 찾아주면 된다
+*/
+
+#include<bits/stdc++.h>
+using namespace std;
+#define len(x) (int) (x).size()
+#define all(x) x.begin(), (x).end()
+#define endl "\n"
+using ll = long long;
+using pii = pair<int,int>;
+using pll = pair<ll,ll>;
+using vi = vector<int>;
+using vl = vector<ll>;
+template <typename T>
+using max_heap = priority_queue<T>;
+template <typename T>
+using min_heap = priority_queue<T, vector<T>, greater<T>>;
+#define fi first
+#define se second
+
+int main()
+{
+  std::cin.tie(nullptr);
+  std::cout.tie(nullptr);
+  std::ios_base::sync_with_stdio(false);
+  
+  ll N, M;
+  cin >> N >> M;
+  
+  vector<ll> v(N);
+  for(ll&x : v) cin >> x;
+  sort(all(v));
+  
+  ll l = 0;
+  ll r = v.back();
+  ll ret;
+  while(l <= r) {
+      ll mid = (l + r)/2;
+      
+      ll sum = 0;
+      ll idx = lower_bound(all(v),mid) - v.begin();
+      
+      for(int i = idx; i < len(v); i++) sum += v[i] - mid;
+      
+      if(sum >= M) {
+        ret = mid;
+        l = mid + 1;
+      } else{
+          r = mid - 1;
+      }
+  }
+  
+  cout << ret;
+}
