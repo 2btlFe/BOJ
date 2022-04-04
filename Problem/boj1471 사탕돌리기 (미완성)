@@ -1,0 +1,75 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+vector<vector<int> > SCC;
+vector<int> numSCC;
+int d[200002];
+bool finished[200002];
+int order = 1;
+stack<int> s;
+int n; 
+
+int scc(int here) {
+    int ret = d[here] = order++;    
+    s.push(here);
+    
+    //트리 간선인지, 확인 
+    int tmp = here;
+    int sumOperator = 0;
+    while(tmp != 0) {
+        sumOperator += tmp%10;
+        tmp /= 10;
+    }
+
+    int there = here;
+    while(sumOperator) {
+        there = (there + 1 > n) ? 1 : there + 1;
+        sumOperator--;
+    }
+    
+    //cout << here << " " << there << endl;
+    
+    //트리 간선 이라면,
+    if(!d[there]) {
+        ret = min(ret, scc(there));
+    } else if(!finished[there]) { //상관없는 교차간선이라면, 
+        ret = min(ret, d[there]);
+    } 
+    
+    //내가 곧 부모라면, scc 진행  
+    
+    if(ret == d[here]) {
+        vector<int> cand;
+        int num = 0;
+        while(1) {
+            int x = s.top();
+            s.pop();
+            num++;
+            cand.push_back(x);
+            finished[x] = true;
+            if(x == here) {
+                break;
+            }
+        }
+        SCC.push_back(cand);
+        numSCC.push_back(num);
+    }
+    return ret;
+}
+
+int main() {
+    cin >> n;
+    
+    for(int i = 1; i <= n; i++) {
+        if(!finished[i]) {scc(i); }
+    }
+    
+    int ans = 0;
+    for(auto cand : SCC) {
+        for(int i : cand) {
+            cout << i << " ";
+        }
+        cout << "\n";
+    }
+}
