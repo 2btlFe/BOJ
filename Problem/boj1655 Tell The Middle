@@ -1,0 +1,77 @@
+/*
+<Problem> boj1655 Tell The Middle
+<Algorithm> priority queue
+<Time Complexity> O(nlogn)
+<Explaination> 
+최소힙과 최대힙을 적절히 사용한다
+두 가지 전제를 지켜야 한다
+1) 최대힙의 크기 == 최소힙의 크기 + 1 || 최대힙의 크기 == 최소힙의 크기 를 유지
+2) 최대힙의 숫자들은 최소힙의 숫자들보다 언제나 크다
+
+My solution: 들어오는 값이 최대힙의 top과 최소힙의 top 과의 대소관계를 확인하고 && 각각의 크기 확인 후
+넣어주거나 교체했다
+
+Optimized Solution: 일단 값을 넣고 상황에 따라 값을 교체한다 
+*/
+#include<bits/stdc++.h>
+
+using namespace std;
+
+#define endl "\n"
+#define all(c) (c).begin(), (c).end()
+#define ll long long
+#define vi vector<int>
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    
+    priority_queue<int> mxpq;
+    priority_queue<int, vector<int>, greater<int> > mnpq;
+    vector<int> ans;
+    int n; cin >> n;
+    
+    
+    while(n--) {
+        int x; cin >> x;
+        
+        int xsz = mxpq.size();
+        int nsz = mnpq.size();
+        
+        if(nsz == 0) {
+            if(xsz == 0) mxpq.push(x);
+            else if(xsz == 1){
+                if(mxpq.top() < x) {
+                    mnpq.push(x);
+                } else {
+                    mnpq.push(mxpq.top());
+                    mxpq.pop();
+                    mxpq.push(x);
+                }
+            }
+        }
+        else if(mxpq.top() > x) {
+            if(xsz == nsz) mxpq.push(x);
+            else {
+                mnpq.push(mxpq.top());
+                mxpq.pop();
+                mxpq.push(x);
+            }
+        } else if(mnpq.top() > x) {
+            if(xsz == nsz) mxpq.push(x);
+            else mnpq.push(x); 
+        } else {
+            if(xsz != nsz) mnpq.push(x);
+            else {
+                mxpq.push(mnpq.top());
+                mnpq.pop();
+                mnpq.push(x);
+            }
+        }
+        //cout << mxpq.size() << " " << mnpq.size() << " : " << mxpq.top() << endl;
+        ans.push_back(mxpq.top());
+    }
+    
+    for(int i : ans) cout << i << endl;
+}
+
