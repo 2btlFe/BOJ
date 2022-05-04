@@ -189,15 +189,18 @@ template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
 const int d4[4][2] = {{0, -1}, {0, 1}, {1, 0}, {-1, 0}};
 const int d8[8][2] = {{0, -1}, {0, 1}, {1, 0}, {-1, 0}, {-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
 
-int cache[100][100];
+const int Left = 0, Right = 1, Down = 2, Up = 3;
 const int INF = 1e9;
+const int blue = 0, red = 1, row = 0, col = 1; 
+
+int cache[100][100];
+
 char board[10][10];
 int o;
 int n, m;
 int dp(int b, int r) {
     //base case
     if(b == r) return INF;
-    else if(b == o) return INF;
     else if(r == o) return 0;
     
     //memoization
@@ -206,24 +209,61 @@ int dp(int b, int r) {
     
     //recursion
     ret = INF;
-    int by = b/10; int bx = b%10;
-    int ry = r/10; int rx = r%10;
+    int ball[2][2];
+    ball[blue][row] = b/10;
+    ball[blue][col] = b%10;
+    ball[red][row] = r/10;
+    ball[red][col] = r%10;
     
-    fo(4) {
+    fo(orient, 4) {
         //base case
-        int nby = by + d4[i][0]; int nbx = bx + d4[i][1];
-        int nry = ry + d4[i][0]; int nrx = rx + d4[i][1];
+        vector<int> whichball = {blue, red};
         
-        if(nby < 0 || nby >= n || nbx < 0 || nbx >= m || nry < 0 || nry >= n || nrx < 0 || nrx >= m) continue;
+        if(orient == Left && ball[blue][row] == ball[red][row]) {
+            if(ball[blue][col] > ball[red][col]) swap(whichball[blue], whichball[red]); 
+        } 
+        else if(orient == Right && ball[blue][row] == ball[red][row]) {
+            if(ball[blue][col] < ball[red][col]) swap(whichball[blue], whichball[red]); 
+        } 
+        else if(orient == Down && ball[blue][col] == ball[red][col]) {
+            if(ball[blue][row] < ball[red][row]) swap(whichball[blue], whichball[red]); 
+        } 
+        else if(orient == Up && ball[blue][col] == ball[red][col]) {
+            if(ball[blue][row] > ball[red][row]) swap(whichball[blue], whichball[red]); 
+        } 
         
-        if(board[nby][nbx] == '#') { nby = by; nbx = bx; }
-        if(board[nry][nrx] == '#') { nry = ry; nrx = rx; }
-        int nb = nby*10 + nbx;
-        int nr = nry*10 + nrx;
+        int nb, nr;
+        for(int color : whichball) {
+            int y = ball[color][row], x = ball[color][col];
+            int ny, nx;
+            
+            while(1) {
+                int ny = y + d4[orient][row];
+                int nx = x + d4[orient][col];
+                
+                //base case
+                if(ny < 0 || ny >= n || nx < 0 || nx >= m) break;
+                if(board[ny][nx] == '#') break;
+                if(board[ny][nx] == 'O') {
+                    y = ny; 
+                    x = nx;
+                    break;
+                }
+                if(board[ny][nx] == 'R' || board[ny][nx] == 'B') break;
+                
+                //이동 가능한 점이므로 이동
+                board[ny][nx] = (color == blue) ? 'B' : 'R';
+                board[y][x] = '.';
+                y = ny; x = nx;
+            }
+                
+            if(color == blue) nb = 10*y + x;
+            else nr = 10*y + x;    
+        }
         
-        ret = min(ret, dp(nb, nr) + 1);
+        if(nb == b && nr == r) ret = min(ret, INF);
+        else ret = min(ret, dp(nb, nr) + 1);
     }
-    
     return ret;
 }
 
@@ -248,7 +288,7 @@ int main() {
         }
     }
 
-    if(dp(b,r) >= INF) {
+    if(dp(b,r) > 10) {
         print(-1);
     } else {
         print(dp(b, r));
