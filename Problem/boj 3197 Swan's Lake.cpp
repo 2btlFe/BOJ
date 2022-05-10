@@ -1,6 +1,29 @@
 /*
-unionParent를 하면서 parent가 문제가 된다 
-unionParent의 시기가 문제가 된다 
+boj 3197 Swan's Lake
+time Complexity: O(r*c*a(r*c));
+Explaination:
+이 문제의 풀이는 워낙 다양하다
+그 중, 나의 풀이는 
+'BFS 두 번' + '2차원 배열 DSU' 로 풀었다
+워낙 빡구현인 문제고,
+다만, 내가 2차원 배열 DSU를 처음해보는 바람에 시간이 오래 걸렸다
+
+int parent[1501][1501];
+int getParent(int r, int c) {
+    if(r*10000 + c == parent[r][c]) return parent[r][c];
+    else return parent[r][c] = getParent(parent[r][c]/10000, parent[r][c]%10000);
+}
+
+void unionParent(int r1, int c1, int r2, int c2) {
+    int p1 = getParent(r1, c1);
+    int p2 = getParent(r2, c2);
+    
+    if(p1 < p2) {
+        parent[p2/10000][p2%10000] = p1;
+    } else {
+        parent[p1/10000][p1%10000] = p2;
+    }
+}
 */
 
 #include <bits/stdc++.h>
@@ -211,9 +234,9 @@ void unionParent(int r1, int c1, int r2, int c2) {
     int p2 = getParent(r2, c2);
     
     if(p1 < p2) {
-        parent[r2][c2] = p1;
+        parent[p2/10000][p2%10000] = p1;
     } else {
-        parent[r1][c1] = p2;
+        parent[p1/10000][p1%10000] = p2;
     }
 }
 
@@ -226,7 +249,6 @@ void init_bfs(int r, int c) {
     while(!q.empty()) {
         int hr = q.front().first;
         int hc = q.front().second;
-        //cout << hr << " " << hc << endl;
         q.pop();
         
         int flag = 0;
@@ -251,11 +273,11 @@ void init_bfs(int r, int c) {
 }
 
 int find_bfs() {
+    int ret = 0;
     while(!fq.empty()) {
         int hr = fq.front().first;
         int hc = fq.front().second;
         
-        //cout << hr << " " << hc << endl;
         fq.pop();
         
         for(int i = 0; i < 4; i++) {
@@ -268,18 +290,11 @@ int find_bfs() {
                 board[tr][tc] = 'C'; 
                 fq.push({tr, tc}); 
                 day[tr][tc] = day[hr][hc] + 1;
-                unionParent(hr, hc, tr, tc);
-                cout << tr << " " << tc << " : " << day[tr][tc] << endl;
-                continue;
             }
             
             unionParent(hr, hc, tr, tc);
-            //cout << hr << " " << hc << " <=> " << tr << " " << tc << "\n";
             
             if(getParent(l1r, l1c) == getParent(l2r, l2c)) {
-                cout << hr << " " << hc << "<->" << tr << " " << tc << endl;
-                cout << hr << " " << hc << " : " << day[hr][hc] << endl;
-                cout << tr << " " << tc << " : " << day[tr][tc] << endl;
                 return max(day[hr][hc], day[tr][tc]);
             }
         }
@@ -288,9 +303,9 @@ int find_bfs() {
 }
 
 int main() {
-	ios::sync_with_stdio(0);
-	cin.tie(0);
-	
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    
     memset(day, -1, sizeof(day));
     
     cin >> R >> C;
@@ -312,22 +327,11 @@ int main() {
     
     for(int i = 0; i < R; i++) {
         for(int j = 0; j < C; j++) {
-            if(board[i][j] == '.') {
+            if(board[i][j] == '.' || board[i][j] == 'L') {
                 init_bfs(i, j);
             }
         }
     }
-    
-    /*
-    while(!fq.empty()) {
-        int r = fq.front().first;
-        int c = fq.front().second;
-        fq.pop();
-        cout << r << " " << c << endl;
-    }
-    */
-    
-    
     
     cout << find_bfs();
 }
