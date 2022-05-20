@@ -1,0 +1,75 @@
+/*
+boj 10282 Hacking
+Algorithm: Dijkstra
+Time Complexity(|E|*log(|V|)
+Explaination:
+
+기존 경로 가중치와 새로운 경로 가중치를 비교했을 때 
+같으면 굳이 pq에 값을 넣을 필요가 없다
+
+새로운 게 작으면 갱신하자
+디테일이 중요하다 
+
+*/
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int infect[10001];
+const int INF = 1e9;
+priority_queue<pair<int, int> >pq;
+vector<vector<pair<int, int> > > edge;
+
+int main() {
+    ios::sync_with_stdio(false);
+	cin.tie(NULL), cout.tie(NULL);
+    int t; cin >> t;
+    while(t--) {
+        int n, d, c; 
+        cin >> n >> d >> c;
+        
+        //init
+        edge.clear();
+        edge.resize(n+1);
+        fill(infect, infect+n+1, INF);
+        
+        for(int i = 0; i < d; i++) {
+            int a, b, s;
+            cin >> a >> b >> s;
+            edge[b].push_back({a, s});
+        }
+        
+        pq.push({0, c});
+        infect[c] = 0;
+        
+        while(!pq.empty()) {
+            int here = pq.top().second;
+            int distance = -pq.top().first;
+            pq.pop();
+            
+            if(infect[here] < distance) continue;
+            
+            for(auto e : edge[here]) {
+                int there = e.first;
+                int dist = e.second;
+                
+                //<라고 하면 메모리 초과가 나온다
+                //같으면 그냥 넘어가도 된다 -> 어차피 결론은 같음 
+                if(infect[there] <= infect[here] + dist) continue;
+                
+                infect[there] = infect[here] + dist;
+                pq.push({-infect[there], there});
+            }
+        }
+        
+        int com = 0;
+        int ret = 0;
+        for(int i = 1; i <= n; i++) {
+            if(infect[i] == INF) continue; 
+            com++;
+            ret = max(ret, infect[i]);
+        }
+        
+        cout << com << " " << ret << "\n";
+    }
+}
