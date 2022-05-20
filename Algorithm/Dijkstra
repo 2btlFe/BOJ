@@ -18,7 +18,7 @@ void dijkstra(int start) {
     int distance = -pq.top().second;
     pq.pop();
     
-    if(d[current] < distance) continue;
+    if(d[current] <= distance) continue;
     for(auto& i : a[current]) {
       int next = i.first;
       int nextDistance = distance + i.second;
