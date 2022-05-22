@@ -1,3 +1,6 @@
+//그냥 안에 있는지 확인하는 것라면, strstr을 쓴다
+char* c = strstr((char*)H.c_str(), (char*)N.c_str());
+
 //O(H)
 vector<int> getPartialMatch(const string& N) {
     int m = N.size();
