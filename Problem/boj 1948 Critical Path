@@ -1,0 +1,74 @@
+#include <bits/stdc++.h>
+#define ll long long int
+using namespace std;
+
+ll d[10001];
+
+/*
+1차 시도 다익스트라 25%에서 실패 
+2차 시도 set 시도 41% 메모리초과 
+3차 시도 size가 변하면 가능 안 변하면 불가능 으로 품 472ms 성공 
+4차 시도 역추적을 dfs로 변형 
+*/
+
+int main() {
+    memset(d, 0, sizeof(d));
+    int n, m; 
+    cin >> n >> m;
+    vector<pair<int, int> > edge[10001];
+    vector<pair<int, int> > redge[10001];
+    
+    for(int i = 0; i < m; i++) {
+        int here, there, cost;
+        cin >> here >> there >> cost;
+        edge[here].push_back({there, cost});
+        redge[there].push_back({here, cost});
+    }
+    
+    int s, e;
+    cin >> s >> e;
+    
+    priority_queue<pair<int, int> > pq;
+    pq.push({0, s});
+    
+    while(!pq.empty()) {
+        int here = pq.top().second;
+        int dist = pq.top().first;
+        pq.pop();
+        
+        if(dist < d[here]) continue;
+        
+        for(auto node : edge[here]) {
+            int there = node.first;
+            int cost = node.second;
+            if(d[there] < dist + cost) {
+                d[there] = dist + cost;
+                pq.push({d[there], there});
+            }
+        }
+    }
+
+    queue<pair<int, int> > q;
+    q.push({e, d[e]});
+    set<pair<int, int> > S;
+    while(!q.empty()) {
+        int here = q.front().first;
+        int dist = q.front().second;
+        q.pop();
+        
+        for(auto node : redge[here]) {
+            int there = node.first;
+            int cost = node.second;
+            
+            if(dist - cost == d[there]) {
+                //cout << there << " " << here << endl;
+                int sz = S.size();
+                S.insert({there, here});
+                if(sz != S.size()) q.push({there, dist - cost});
+            }
+        }
+    }
+    
+    cout << d[e] << endl;
+    cout << S.size();
+}
