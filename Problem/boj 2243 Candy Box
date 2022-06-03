@@ -1,0 +1,74 @@
+/*
+boj 2243 Candy Box
+Algorithm: Segment_Tree, Fenwick_Tree, Binary_search
+Time_Complexity: O(N*log(1e6)*log(1e6));
+Explaination:
+
+k번째 원소 찾기 -> Binary_Search + Fenwick_Tree를 이용해 찾음(lg(1e6) * lg(1e6))
+갱신은 쉽다 
+
+*/
+#include <bits/stdc++.h>
+
+using namespace std;
+
+//펜윅 트리 
+struct FenwickTree {
+    vector<int> tree;
+    FenwickTree(int n) : tree(n+1) {}
+    
+    //부분합
+    int sum(int pos) {
+        ++pos;
+        int ret = 0;
+        while(pos > 0) {
+            ret += tree[pos];
+            //최종 비트 지움 
+            pos &= (pos - 1);
+        }
+        return ret;
+    }
+    
+    //A[pos]에 val을 더함
+    void add(int pos, int val) {
+        ++pos;
+        while(pos < tree.size()) {
+            tree[pos] += val;
+            //최종 비트 색출 
+            pos += (pos & -pos);
+        }
+    }
+};
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    
+    
+    int n; cin >> n;
+    auto candy = FenwickTree(1000001);
+    while(n--) {
+        int A, B; cin >> A >> B;
+    
+        if(A == 1) {
+            int l = 0;
+            int r = 1000000;
+            int cnt = 20;   //lg(1e6)
+            while(cnt--) {
+                int mid = (l + r) / 2;
+                int psum = candy.sum(mid);
+                if(psum >= B) {
+                    r = mid;    
+                } else {
+                    l = mid + 1;
+                }
+            }
+            cout << r << "\n";
+            candy.add(r, -1);
+        } else {
+            int C; cin >> C;
+            candy.add(B, C);
+        }
+    }
+}
