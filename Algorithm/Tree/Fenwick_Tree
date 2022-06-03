@@ -1,0 +1,43 @@
+//펜윅 트리 
+struct FenwickTree {
+    vector<int> tree;
+    FenwickTree(int n) : tree(n+1) {}
+    
+    //부분합
+    int sum(int pos) {
+        ++pos;
+        int ret = 0;
+        while(pos > 0) {
+            ret += tree[pos];
+            //최종 비트 지움 
+            pos &= (pos - 1);
+        }
+        return ret;
+    }
+    
+    //A[pos]에 val을 더함
+    void add(int pos, int val) {
+        ++pos;
+        while(pos < tree.size()) {
+            tree[pos] += val;
+            //최종 비트 색출 
+            pos += (pos & -pos);
+        }
+    }
+    
+    int kth(int k) {
+        int l = 0;
+        int r = tree.size()-1;
+        int cnt = (int)log2(r) + 1;
+        while(cnt--) {
+            int mid = (l + r) / 2;
+            int psum = sum(mid);
+            if(psum >= k) {
+                r = mid;    
+            } else {
+                l = mid + 1;
+            }    
+        }
+        return r;
+    }
+};
