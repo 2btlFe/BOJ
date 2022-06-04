@@ -1,0 +1,83 @@
+/*
+boj 11505 solve the Segement Mulplex
+Algorithm: segment_tree
+TimeComplexity: O((N+M+K)*log(N))
+Explaination:
+그냥 일반적인 segmentTree 구현이다 
+update만 잘하자 
+*/
+
+#include <bits/stdc++.h>
+#define ll long long int
+using namespace std;
+
+const ll M = 1000*1000*1000+7;
+
+struct segmentTree{
+    
+    int n;
+    vector<ll> rangeMul;
+    
+    segmentTree(vector<int>& array) {
+        n = array.size();
+        rangeMul.resize(4*n);
+        init(array, 0, n-1, 1);
+    }
+    
+    ll init(vector<int>& array, int left, int right, int node) {
+        if(left == right) return rangeMul[node] = array[left];
+        int mid = (left + right) / 2;
+        ll mulLeft = init(array, left, mid, node*2);
+        ll mulRight = init(array, mid + 1, right, node*2 + 1);
+        return rangeMul[node] = (mulLeft * mulRight) % M;
+    }
+    
+    ll update(int left, int right, int node, int index, ll val) {
+        if(index < left || index > right) return rangeMul[node];
+        if(left == right) return rangeMul[node] = val;
+        int mid = (left + right) / 2;
+        ll mulLeft = update(left, mid, node*2, index, val);
+        ll mulRight = update(mid+1, right, node*2+1, index, val);
+        return rangeMul[node] = (mulLeft * mulRight) % M;
+    }
+
+    ll mul(int left, int right, int node, int nodeLeft, int nodeRight) {
+        if(left > nodeRight || right < nodeLeft) return M + 1;
+        if(left <= nodeLeft && right >= nodeRight) return rangeMul[node];
+        int mid = (nodeLeft + nodeRight) / 2;
+        return (mul(left, right, node*2, nodeLeft, mid) * mul(left, right, node*2 + 1, mid+1, nodeRight))% M;
+    }
+};
+
+/*
+arr 0 -> N-1
+tree 1 -> N
+*/
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    
+    int N, M, K;
+    cin >> N >> M >> K;
+    
+    vector<int> arr(N);
+    for(int& x : arr) cin >> x;
+    
+    auto tree = segmentTree(arr);
+    
+    M += K;
+    while(M--) {
+        int a, b;
+        cin >> a >> b;
+        
+        if(a == 1) {
+            ll c; cin >> c;
+            tree.update(0, N-1, 1, b-1, c);
+        } else {
+            int c; cin >> c;
+            cout << tree.mul(b-1, c-1, 1, 0, N-1) << "\n";
+        }
+    }
+}
