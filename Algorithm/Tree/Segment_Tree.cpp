@@ -35,6 +35,17 @@ struct RMQ {
         return min(query(left, right, node*2, nodeLeft, mid), query(left, right, node*2 + 1, mid+1, nodeRight));
     }
     
+    //O(lgn)
+    int update(int left, int right, int node, int idx, int val) {
+        if(idx < left || idx > right) return rangeMin[node];
+        if(left == right) return val;
+
+        int mid = (left + right) / 2;
+        int leftMin = update(left, mid, node*2, idx, val);
+        int rightMin = update(mid+1, right, node*2+1, idx, val);
+        return rangeMin[node] = min(leftMin, rightMin);
+    }    
+    
     int query(int left, int right) {
         return query(left, right, 1, 0, n-1);
     }
