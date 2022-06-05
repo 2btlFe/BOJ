@@ -1,0 +1,88 @@
+/*
+boj 14428 Sequences and Queries 16
+Algorithm: Segment_Tree
+TimeComplexity: MlogN
+Explaination:
+Index를 넘기는 신기한 문제 
+*/
+
+#include <bits/stdc++.h>
+
+using namespace std;
+
+const int INF = 100001;
+int N; 
+vector<int> minIndex;
+int number[INF];
+
+int init(int left, int right, int node) {
+    if(left == right) return minIndex[node] = left;
+    int mid = (left + right) / 2;
+    int lidx = init(left, mid, node*2);
+    int ridx = init(mid+1, right, node*2+1);
+    
+    int ret;
+    if(number[lidx] == number[ridx]) ret = min(lidx, ridx);
+    else ret = (number[lidx] < number[ridx]) ? lidx : ridx;
+    
+    return minIndex[node] = ret;
+}
+    
+int update(int left, int right, int node, int idx, int val) {
+    if(idx < left || idx > right) return minIndex[node];
+    if(left == right) return minIndex[node] = idx;
+    
+    int cmp = number[minIndex[node]];
+    bool ok = (cmp > val) || (cmp == val && idx < minIndex[node]);
+    if(ok) minIndex[node] = idx;
+   
+    int mid = (left + right) / 2;
+    int lidx = update(left, mid, node*2, idx, val);
+    int ridx = update(mid+1, right, node*2+1, idx, val); 
+    
+    int ret;
+    if(number[lidx] == number[ridx]) ret = min(lidx, ridx);
+    else ret = (number[lidx] < number[ridx]) ? lidx : ridx;
+    
+    return minIndex[node] = ret;
+}    
+
+int query(int left, int right, int nodeLeft, int nodeRight, int node) {
+    if(right < nodeLeft || left > nodeRight) return N;
+    if(left <= nodeLeft && right >= nodeRight) return minIndex[node];
+    int mid = (nodeLeft + nodeRight) / 2;
+    int lidx = query(left, right, nodeLeft, mid, node*2);
+    int ridx = query(left, right, mid + 1, nodeRight, node*2+1);
+    int ret = (number[lidx] <= number[ridx]) ? lidx : ridx;
+    return ret;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+        
+    cin >> N;
+    minIndex.resize(4*N);
+    
+    for(int i = 0; i < N; i++) {
+        int x; cin >> x;
+        number[i] = x;
+    }
+    
+    number[N] = 1e9 + 1;
+    init(0, N-1, 1);
+    
+    int M; cin >> M;
+    
+    while(M--) {
+        int a, b, c;
+        cin >> a >> b >> c;
+        if(a == 1) {
+            number[b-1] = c;
+            update(0, N-1, 1, b-1, c);
+        } else {
+            cout << query(b-1, c-1, 0, N-1, 1) + 1 << "\n";
+        }
+    }
+    
+}
