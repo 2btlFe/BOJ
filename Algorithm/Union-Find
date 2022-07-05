@@ -18,3 +18,6 @@ int findParent(int parent[], int a, int b) {
   b = getParent(parent, b);
   return a == b;
 }
+
+//parent 갱신하기 
+//iota(parent + 1, parent + 1 + n, 1);
