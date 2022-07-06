@@ -1,0 +1,55 @@
+/*
+boj 1517 Bubble Sort
+Algorithm: merge_sort, sort+segment_tree
+Time_Complexity: O(nlogn)
+Explaination:
+
+merge_sort를 이용해서 수열의 반전의 개수를 찾을 수 있다
+아니면 sort+segment_tree로 접근해야한다
+
+값이 10^9까지 있으므로 값이 아닌 인덱스로 segment_tree를 구현해야 한다
+*/
+#include <bits/stdc++.h>
+#define ll long long int
+using namespace std;
+
+vector<int> v;
+ll merge(int left, int right) {
+    //no inversion
+    if(left == right) return 0;
+    
+    //Divide and Conquer
+    int mid = (left + right) / 2;
+    long long ret = merge(left, mid) + merge(mid+1, right);
+    
+    //임시 배열
+    vector<int> tmp(right - left + 1);
+    int tmpIndex = 0, leftIndex = left, rightIndex = mid+1;
+    while(leftIndex <= mid || rightIndex <= right) {
+        if(leftIndex <= mid && (rightIndex > right || v[leftIndex] <= v[rightIndex])) {
+            tmp[tmpIndex++] = v[leftIndex++];
+        }
+        else { //Inversion 발생 
+            ret += mid - leftIndex + 1;
+            tmp[tmpIndex++] = v[rightIndex++];
+        }
+    }
+    //tmp합치기 
+    for(int i = 0; i < tmp.size(); i++) {
+        v[left + i] = tmp[i];
+    }
+    return ret;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    
+    int n; cin >> n;
+    for(int i = 0; i < n; i++) {
+        int x; cin >> x;
+        v.push_back(x);
+    }
+    
+    cout << merge(0, n-1);
+}
