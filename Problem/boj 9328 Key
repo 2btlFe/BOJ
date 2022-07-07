@@ -1,0 +1,114 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+const int INF = 101;
+int d4[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+char board[INF][INF];
+int check[INF][INF]; 
+int key[26], h, w;
+queue<pair<int, int> > v[26];
+queue<pair<int, int> > q;
+
+int bfs(int r, int c) {
+    q.push({r, c});
+    check[r][c] = 1;
+    
+    int ret = 0;
+    while(!q.empty()) {
+        int y, x;
+        y = q.front().first;
+        x = q.front().second;
+        q.pop();
+        
+        if(board[y][x] == '$') ret++;
+        
+        for(int i = 0; i < 4; i++) {
+            int ny = y + d4[i][0];
+            int nx = x + d4[i][1];
+            
+            if(ny < 0 || ny >= h || nx < 0 || nx >= w) continue;
+            if(check[ny][nx] == 1 || board[ny][nx] == '*') continue; 
+            
+            
+            bool isDot = (board[ny][nx] == '.');
+            bool isBigAlphabet = (board[ny][nx] - 'A' >= 0) && (board[ny][nx] - 'A' < 26);
+            bool isSmallAlphabet = (board[ny][nx] - 'a' >= 0) && (board[ny][nx] - 'a' < 26);            
+            bool isDoc = (board[ny][nx] == '$');
+            
+             
+            
+            if(isDot || isDoc) {
+                q.push({ny,nx});
+                check[ny][nx] = 1;
+            } else if(isBigAlphabet) {
+                if(key[board[ny][nx] - 'A'] == 1) {
+                    //cout << ny << " " << nx << "\n";
+                    q.push({ny,nx});
+                                    
+                } else {
+                    v[board[ny][nx] - 'A'].push({ny, nx});
+                }  
+                check[ny][nx] = 1;   
+            } else if(isSmallAlphabet) {
+                int num = board[ny][nx] - 'a';
+                key[num] = 1;
+                while(!v[num].empty()) {q.push(v[num].front()); v[num].pop();}
+            } 
+        }
+    }
+    return ret;
+}
+
+int main() {
+    int t; cin >> t;
+    while(t--) {
+        cin >> h >> w;
+        for(int i = 0; i < h; i++) {
+            string s; cin >> s;
+            for(int j = 0; j < w; j++) {        
+                board[i][j] = s[j];
+            }
+        }
+        
+        //init
+        for(int i = 0; i < h; i++) for(int j = 0; j < w; j++) check[i][j] = 0;
+        memset(key, 0, sizeof(key));
+        string sk; cin >> sk;
+        for(char c : sk) key[c - 'a'] = 1;
+        
+        int ret = 0;
+        for(int i = 0; i < h; i++) {
+            for(int j = 0; j < w; j++) {
+                if(check[i][j] == 1) continue;
+                
+                bool isSurface = (i == 0) || (i == h-1) || (j == 0) || (j == w-1);
+                if(!isSurface) continue;
+                
+                bool isDot = (board[i][j] == '.');
+                bool isBigAlphabet = (board[i][j] - 'A' >= 0) && (board[i][j] - 'A' < 26);
+                bool isSmallAlphabet = (board[i][j] - 'a' >= 0) && (board[i][j] - 'a' < 26);
+                bool isDoc = (board[i][j] == '$');
+                
+                if(isDot || isDoc) {
+                    ret += bfs(i, j);
+                } else if(isBigAlphabet) {
+                    if(key[board[i][j] - 'A'] == 1) {
+                        ret += bfs(i, j);
+                    } else {
+                        v[board[i][j] - 'A'].push({i, j});
+                        check[i][j] = 1;
+                    }
+                } else if(isSmallAlphabet) {
+                    int num = board[i][j] - 'a';
+                    key[num] = 1;
+                    while(!v[num].empty()) {q.push(v[num].front()); v[num].pop();}
+
+                    ret += bfs(i, j);
+                }
+            }
+        }
+        
+        cout << ret << "\n";        
+    }
+}
