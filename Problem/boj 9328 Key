@@ -10,10 +10,7 @@ int key[26], h, w;
 queue<pair<int, int> > v[26];
 queue<pair<int, int> > q;
 
-int bfs(int r, int c) {
-    q.push({r, c});
-    check[r][c] = 1;
-    
+int bfs() {
     int ret = 0;
     while(!q.empty()) {
         int y, x;
@@ -27,31 +24,30 @@ int bfs(int r, int c) {
             int ny = y + d4[i][0];
             int nx = x + d4[i][1];
             
-            if(ny < 0 || ny >= h || nx < 0 || nx >= w) continue;
-            if(check[ny][nx] == 1 || board[ny][nx] == '*') continue; 
-            
+            if(ny < 0 || ny >= h || nx < 0 || nx >= w || (check[ny][nx] == 1) || board[ny][nx] == '*')              continue; 
             
             bool isDot = (board[ny][nx] == '.');
             bool isBigAlphabet = (board[ny][nx] - 'A' >= 0) && (board[ny][nx] - 'A' < 26);
-            bool isSmallAlphabet = (board[ny][nx] - 'a' >= 0) && (board[ny][nx] - 'a' < 26);            
+            bool isSmallAlphabet = (board[ny][nx] - 'a' >= 0) && (board[ny][nx] - 'a' < 26);          
             bool isDoc = (board[ny][nx] == '$');
-            
-             
-            
+
+            //cout << ny << " " << nx << " : " << board[ny][nx] << "\n";
+          
             if(isDot || isDoc) {
                 q.push({ny,nx});
                 check[ny][nx] = 1;
             } else if(isBigAlphabet) {
-                if(key[board[ny][nx] - 'A'] == 1) {
-                    //cout << ny << " " << nx << "\n";
-                    q.push({ny,nx});
-                                    
+                int num = board[ny][nx] - 'A';
+                if(key[num] == 1) {
+                    q.push({ny,nx}); 
                 } else {
-                    v[board[ny][nx] - 'A'].push({ny, nx});
+                    v[num].push({ny, nx});
                 }  
                 check[ny][nx] = 1;   
             } else if(isSmallAlphabet) {
                 int num = board[ny][nx] - 'a';
+                q.push({ny,nx});
+                check[ny][nx] = 1;
                 key[num] = 1;
                 while(!v[num].empty()) {q.push(v[num].front()); v[num].pop();}
             } 
@@ -62,6 +58,7 @@ int bfs(int r, int c) {
 
 int main() {
     int t; cin >> t;
+    vector<int> answer;
     while(t--) {
         cin >> h >> w;
         for(int i = 0; i < h; i++) {
@@ -75,7 +72,7 @@ int main() {
         for(int i = 0; i < h; i++) for(int j = 0; j < w; j++) check[i][j] = 0;
         memset(key, 0, sizeof(key));
         string sk; cin >> sk;
-        for(char c : sk) key[c - 'a'] = 1;
+        if(sk != "0") for(char c : sk) key[c - 'a'] = 1;
         
         int ret = 0;
         for(int i = 0; i < h; i++) {
@@ -91,24 +88,37 @@ int main() {
                 bool isDoc = (board[i][j] == '$');
                 
                 if(isDot || isDoc) {
-                    ret += bfs(i, j);
+                    q.push({i, j}); check[i][j] = 1; 
+                    ret += bfs();
                 } else if(isBigAlphabet) {
-                    if(key[board[i][j] - 'A'] == 1) {
-                        ret += bfs(i, j);
+                    int num = board[i][j] - 'A';
+                    if(key[num] == 1) {
+                        q.push({i, j}); check[i][j] = 1; 
+                        ret += bfs();
                     } else {
-                        v[board[i][j] - 'A'].push({i, j});
+                        v[num].push({i, j});
                         check[i][j] = 1;
                     }
                 } else if(isSmallAlphabet) {
-                    int num = board[i][j] - 'a';
-                    key[num] = 1;
-                    while(!v[num].empty()) {q.push(v[num].front()); v[num].pop();}
-
-                    ret += bfs(i, j);
+                  q.push({i, j}); check[i][j] = 1; 
+                  int num = board[i][j] - 'a';
+                  key[num] = 1;
+                  while(!v[num].empty()) {q.push(v[num].front()); v[num].pop();}
+                  ret += bfs();
                 }
             }
         }
-        
-        cout << ret << "\n";        
+
+      for(int i = 0; i < 26; i++) {
+        if(key[i] == 1) {
+          while(!v[i].empty()) {q.push(v[i].front()); v[i].pop();}
+        }
+      }
+      ret += bfs();
+      
+      answer.push_back(ret);       
     }
+  for(int ans : answer) cout << ans << "\n";
 }
+
+       
