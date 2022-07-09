@@ -1,0 +1,51 @@
+/*
+boj 7579 APP
+Algorithm: DP - Knapsack
+Time_Complexity: O(N^2cn)
+Explaination: 
+냅색 DP는 꾸준히 연습하자 
+  for(int i = 1; i <= N; i++) {
+    for(int cost = 0; cost <= 10001; cost++) {
+      if(cost - price[i] >= 0) dp[i][cost] = max(dp[i-1][cost], dp[i-1][cost - price[i]] + memory[i]);
+      else dp[i][cost] = dp[i-1][cost];
+    }
+  }
+문으로 나온다 
+*/
+
+#include <bits/stdc++.h>
+#define endl "\n"
+#define ll long long int
+
+using namespace std;
+
+int main() {
+  ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);	
+  int N, M;
+  cin >> N >> M;
+  int memory[101], price[101];
+  for(int i = 1; i <= N; i++) {
+    cin >> memory[i];
+  }
+  for(int i = 1; i <= N; i++) {
+    cin >> price[i];
+  }
+  
+  int dp[101][10101]; //i번째 상품까지 각 비용으로 얻을 수 있는 최대 메모리 
+  memset(dp, 0, sizeof(dp));
+  dp[0][0] = 0;
+
+  for(int i = 1; i <= N; i++) {
+    for(int cost = 0; cost <= 10001; cost++) {
+      if(cost - price[i] >= 0) dp[i][cost] = max(dp[i-1][cost], dp[i-1][cost - price[i]] + memory[i]);
+      else dp[i][cost] = dp[i-1][cost];
+    }
+  }
+
+  int ans;
+  for(int i = 0; i <= 10001; i++) {
+    if(dp[N][i] >= M) {ans = i; break;} 
+  }    
+  
+  cout << ans;
+}
