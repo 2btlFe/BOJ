@@ -1,4 +1,5 @@
 const double PI = 2.0*acos(0.0);
+const double EPSILON = 2.2204460492503131e-016;
 
 struct vector2{
   double x, y;
@@ -52,6 +53,42 @@ double ccw(vector2 p, vector2 a, vector2 b){
   return ccw(a-p, b-p);
 }
 
+bool lineIntersection(vector2 a, vector2 b, vector2 c, vector2 d, vector2& x) {
+  double det = (b-a).cross(d-c);
+  //두 선이 평행인 경우
+  if(fabs(det) < EPSILON) return false;
+  x = a + (b-a)*((c-a).cross(d-c) / det);
+  return true;
+}
+
+//평행한 두 선분의 교차점찾기
+bool parallelSegments(vector2 a, vector2 b, vector2 c, vector2 d, vector2& p) {
+  if(b < a) swap(a, b);
+  if(d < c) swap(c, d);
+
+  //만나지 않는다면, false반환 
+  if(ccw(a, b, c) != 0 || b < c || d < a) return false;
+  //두 선분은 확실히 겹치니 교차점을 하나 고른다
+  if(a < c) p = c; else p = a;
+  return true;
+}
+
+//p가 (a,b)를 감싸면서 각 변이 x,y축에 평행한 최소 사각형 내부에 있는지 확인한다.
+//a,b,p가 일직선 상에 있다고 가정한다.
+bool inBoundingRectangle(vector2 p, vector2 a, vector2 b) {
+  if(b < a) swap(a, b);
+  return p == a || p == b || (a < p && p < b);
+}
+
+//(a,b)와 (c,d)의 교점반환
+bool segmentIntersection(vector2 a, vector2 b, vector2 c, vector2 d, vector2& p) {
+  //교점을 구하는 겸, 만약 평행하다면,
+  if(!lineIntersection(a, b, c, d, p)) 
+    return parallelSegments(a, b, c, d, p);
+  //p가 두 선분에 포함되어 있는 경우에만 참을 반환한다 
+  return inBoundingRectangle(p, a, b) && inBoundingRectangle(p, c, d);
+}
+
 bool segmentIntersects(vector2 a, vector2 b, vector2 c, vector2 d) {
   double ab = ccw(a, b, c) * ccw(a, b, d);
   double cd = ccw(c, d, a) * ccw(c, d, b);
@@ -62,7 +99,6 @@ bool segmentIntersects(vector2 a, vector2 b, vector2 c, vector2 d) {
     if(d < c) swap(c, d);
 
     return !(b < c || d < a); 
-    
   }
   return ab <= 0 && cd <= 0;
 }
