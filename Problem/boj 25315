@@ -1,5 +1,15 @@
-#include <bits/stdc++.h>
+/*
+boj 25315 N수매화검법
+Algorithm: Line_Intersect, Brute_Force
+Time_Complexity: O(N^2)
+Explain: 
+사실 N^2 이면 모든 교점을 알아낼 수 있다
+거기에 교차하는지 확인하는 것은 O(1)으로도 가능하므로
+결국 Brute Force라고 볼 수 있다
+*/
 
+#include <bits/stdc++.h>
+#define ll long long
 using namespace std;
 
 struct vector2 {
@@ -27,8 +37,8 @@ bool lineIntersects(vector2 a, vector2 b, vector2 c, vector2 d) {
     
     if(ab == 0 && cd == 0) {
         if(b < a) swap(a, b);
-        if(d < c) swpa(c, d);
-        return !((b < c || d < a);
+        if(d < c) swap(c, d);
+        return !(b < c || d < a);
     } 
     return ab <= 0 && cd <= 0;
 }
@@ -41,20 +51,27 @@ int main() {
     vector<pair<int, int> > si;
     vector<pair<int, int> > ei;
     int w[2501];
+    ll ret = 0;
     int N; cin >> N;
+    int wi;
     double sx, sy, ex, ey;
     for(int i = 0; i < N; i++) {
-        cin >> sx >> sy >> ex >> ey;
+        cin >> sx >> sy >> ex >> ey >> wi;
         si.push_back({sx, sy});
         ei.push_back({ex, ey});
+        w[i] = wi;
+        ret += wi;
+        vector2 a(sx, sy), b(ex, ey);
         for(int j = 0; j < i; j++) {
-                
+            vector2 c(si[j].first, si[j].second);
+            vector2 d(ei[j].first, ei[j].second);
             
+            //cout << i << " " << j << " : " << lineIntersects(a, b, c, d) << endl; 
+            
+            if(lineIntersects(a, b, c, d)) {
+                ret += min(w[i], w[j]);    
+            }
         }
     }
-    
-    
-    
-    
-    
+    cout << ret << endl;
 }
