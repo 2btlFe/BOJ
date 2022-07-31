@@ -1,0 +1,60 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+struct vector2 {
+    double x, y;
+    vector2(double _x = 0, double _y = 0) : x(_x), y(_y) {}
+    
+    bool operator < (const vector2 &rhs) const {
+        return (x == rhs.x) ? (y < rhs.y) : (x < rhs.x); 
+    }
+};
+
+int ccw(vector2 a, vector2 b, vector2 c) {
+    double abx = b.x - a.x, aby = b.y - a.y;
+    double bcx = c.x - b.x, bcy = c.y - b.y;
+    
+    double tmp = abx * bcy - bcx * aby;
+    if(tmp == 0) return 0;
+    else if(tmp < 0) return -1;
+    else return 1;
+}
+
+bool lineIntersects(vector2 a, vector2 b, vector2 c, vector2 d) {
+    int ab = ccw(a, b, c) * ccw(a, b, d);
+    int cd = ccw(c, d, a) * ccw(c, d, b);
+    
+    if(ab == 0 && cd == 0) {
+        if(b < a) swap(a, b);
+        if(d < c) swpa(c, d);
+        return !((b < c || d < a);
+    } 
+    return ab <= 0 && cd <= 0;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    
+    vector<pair<int, int> > si;
+    vector<pair<int, int> > ei;
+    int w[2501];
+    int N; cin >> N;
+    double sx, sy, ex, ey;
+    for(int i = 0; i < N; i++) {
+        cin >> sx >> sy >> ex >> ey;
+        si.push_back({sx, sy});
+        ei.push_back({ex, ey});
+        for(int j = 0; j < i; j++) {
+                
+            
+        }
+    }
+    
+    
+    
+    
+    
+}
