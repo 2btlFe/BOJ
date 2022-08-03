@@ -1,0 +1,79 @@
+#include <bits/stdc++.h>
+#define all(x) x.begin(), x.end()
+using namespace std;
+
+//O(H)
+vector<int> getPartialMatch(const string& N) {
+    int m = N.size();
+    vector<int> pi(m, 0);
+    int begin = 1, matched = 0;
+    while(begin + matched < m) {
+        if(N[begin + matched] == N[matched]) {
+            matched++;
+            pi[begin + matched - 1] = matched;
+        } else {
+            if(matched == 0) begin++;
+            else {
+                begin += matched - pi[matched - 1];
+                matched = pi[matched - 1];
+            }
+        }
+    }
+    return pi;
+}
+
+//O(N)
+string kmpSearch(const string& H, const string& N) {
+    int n = H.size(), m = N.size();
+    vector<int> ret;
+    vector<int> pi = getPartialMatch(N);
+    
+    
+    stack<pair<int, int> > s;
+    for(int next = 0; next < n; next++) {
+        int matched = s.empty() ? 0 : s.top().second;
+        //cout << "check " << H[next] << endl;
+        
+        while(true) {
+            //cout << matched << " :  " << H[next] << " " << N[matched] << endl;
+            if(H[next] == N[matched]) {
+                matched++;
+                s.push({next, matched});
+                if(matched == m) {
+                    while(matched--) {
+                        s.pop();
+                    }
+                }
+                break;
+            } else {
+                if(matched == 0) {
+                    s.push({next, 0});
+                    //cout << H[next];
+                    break;
+                }
+                matched = pi[matched - 1];
+            }
+        }
+        
+    }
+    
+    vector<int> rans;
+    while(!s.empty()) {
+        int idx = s.top().first;
+        rans.push_back(idx);
+    }
+    reverse(all(rans));
+    
+    string ans;
+    for(int i : rans) {
+        ans += H[i];
+    }
+    return ans;
+}
+
+int main() {
+    string H, N;
+    cin >> H >> N;
+    
+    cout << kmpSearch(H, N);
+}
