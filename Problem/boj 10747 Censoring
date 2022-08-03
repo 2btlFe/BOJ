@@ -1,3 +1,14 @@
+/*
+boj 10747 Censoring
+Algorithm: KMP
+Time_Complexity: O(m + n)
+Explaination: 
+
+matched(j)를 이전에 있던 값의 matched로 
+바꿔줘야 한다 -> 고로 stack을 이용해 
+쌓아간다 
+*/
+
 #include <bits/stdc++.h>
 #define all(x) x.begin(), x.end()
 using namespace std;
@@ -28,17 +39,13 @@ string kmpSearch(const string& H, const string& N) {
     vector<int> ret;
     vector<int> pi = getPartialMatch(N);
     
-    
-    stack<pair<int, int> > s;
+    stack<pair<char, int> > s;
     for(int next = 0; next < n; next++) {
         int matched = s.empty() ? 0 : s.top().second;
-        //cout << "check " << H[next] << endl;
-        
         while(true) {
-            //cout << matched << " :  " << H[next] << " " << N[matched] << endl;
             if(H[next] == N[matched]) {
                 matched++;
-                s.push({next, matched});
+                s.push({H[next], matched});
                 if(matched == m) {
                     while(matched--) {
                         s.pop();
@@ -46,32 +53,29 @@ string kmpSearch(const string& H, const string& N) {
                 }
                 break;
             } else {
-                if(matched == 0) {
-                    s.push({next, 0});
-                    //cout << H[next];
+                if(matched == pi[matched - 1]) {
+                    s.push({H[next], 0});
                     break;
                 }
                 matched = pi[matched - 1];
             }
         }
-        
     }
-    
-    vector<int> rans;
-    while(!s.empty()) {
-        int idx = s.top().first;
-        rans.push_back(idx);
-    }
-    reverse(all(rans));
     
     string ans;
-    for(int i : rans) {
-        ans += H[i];
+    while(!s.empty()) {
+        ans += s.top().first;
+        s.pop();
     }
+    reverse(all(ans));
     return ans;
 }
 
 int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    
     string H, N;
     cin >> H >> N;
     
