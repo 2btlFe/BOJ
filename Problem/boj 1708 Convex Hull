@@ -1,0 +1,84 @@
+/*
+boj 1708 Convex Hull
+Algorithm: Convex_Hull, GiftWrap Algorithm
+Time_Complexity: O(NH) O(N^2)
+Explaination:
+이 문제는 사실 시간이 넘어갈 가능성이 높지만, 
+예시가 O(N^2)인 경우가 없어서 그냥 넘어간 것 같다
+
+선물포장 알고리즘 : O(N^2)
+그라함 스캔 알고리즘: O(NlgN)
+*/
+
+#include <bits/stdc++.h>
+
+using namespace std;
+
+struct vector2{
+  double x, y;
+  explicit vector2(double _x = 0, double _y = 0) : x(_x), y(_y) {}
+  
+  bool operator == (const vector2& rhs) const {
+      return x == rhs.x && y == rhs.y;
+  }
+  
+  bool operator < (const vector2& rhs) const {
+      return x != rhs.x ? x < rhs.x : y < rhs.y;
+  }
+  
+  vector2 operator - (const vector2& rhs) const {
+      return vector2(x - rhs.x, y - rhs.y);
+  }
+  
+  double norm() const { return hypot(x, y); }
+  
+  double cross(const vector2& rhs) const {
+      return x*rhs.y - y*rhs.x;
+  }
+};
+
+double ccw(vector2 a, vector2 b, vector2 c) {
+    return (a-c).cross(b-c);
+}
+
+typedef vector<vector2> polygon;
+polygon giftWrap(const vector<vector2>& points) {
+    int n = points.size();
+    polygon hull;    
+    //1. 가장 왼쪽 아래 점을 찾는다 
+    vector2 pivot = *min_element(points.begin(), points.end());
+    hull.push_back(pivot);
+    
+    //2. pivot을 다시 만나기 전까지 선물 포장을 계속한다 
+    while(true) {
+        vector2 ph = hull.back(), next = points[0];
+        for(int i = 0; i < n; i++) {
+            double cross = ccw(ph, next, points[i]);
+            double dist = (next - ph).norm() - (points[i] - ph).norm();
+            //cross가 0보다 작거나(더 왼쪽에 있거나) 0이어도 더 멀리 떨어져있으면 가장 왼쪽의 점이다
+            if(cross < 0 || (cross == 0 && dist < 0)) {
+                next = points[i];
+            }
+        }
+        if(next == pivot) break;
+        hull.push_back(next);
+    }
+    return hull;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    
+    int N ; cin >> N;
+    vector<vector2> v;
+    while(N--) {
+        double a, b;
+        cin >> a >> b;
+        v.push_back(vector2(a, b));
+    }
+    
+    polygon ans = giftWrap(v);
+    cout << ans.size();
+}
