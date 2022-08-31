@@ -6,10 +6,12 @@ Explaination:
 일반적인 2-SAT문제로 보이지만,
 1은 항상 true여야 한다는 조건이 붙었다.
 이를 풀어내려면, 
-1부터 시작해서 dfs로 연결된 node들은 모두 1로 만들고
-
+1) 1부터 시작해서 dfs로 연결된 node들은 모두 1로 만들고
 처음부터 끝까지 다시 dfs로 확인해서 
 연결이 T -> F 가 나오는지 확인하면 된다.
+
+2) X1은 무조건 참이어야 하므로
+(X1 V X1)을 추가한다 
 */
 #include <bits/stdc++.h>
 #define ll long long
