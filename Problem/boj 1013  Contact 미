@@ -1,0 +1,77 @@
+#include <bits/stdc++.h>
+#define ll long long int
+#define endl "\n"
+#define all(x) x.begin(), x.end()
+
+using namespace std;
+
+int main() {
+    int T; cin >> T;
+    while(T--) {
+        string s; cin >> s;
+        
+        int init = 0;
+        bool fir = false, sec = false;
+        bool ret = true;
+        for(int i = 0; i < s.size(); i++) {
+            if(init == 0) {
+                if(s[i] == '0') {
+                    sec = true;
+                } else{
+                    fir = true;
+                }    
+            }
+            
+            //01
+            if(sec) {
+                if(i < s.size() - 1 && s[i] == '0' && s[i+1] == '1') {
+                    fir = true; sec = false;
+                    i = i + 1;
+                } else {
+                    ret = false;
+                    break;
+                }
+            }
+            
+            //100+1+
+            if(fir) {
+                if(i < s.size() - 2 && s[i] == '1' && s[i+1] == '0' && s[i+2] == '0') {
+                    int j, k;
+                    for(j = i + 2; (j < s.size() && s[j] == '0'); j++) {}
+                    
+                    if(j == s.size()) {
+                        ret = false;
+                        break;
+                    }
+                    
+                    for(k = j; (k < s.size() && s[k] == '1'); k++) {}
+                    
+                    if(k == j) {
+                        ret = false;
+                        break;
+                    }
+                    
+                    i = k;
+                    fir = false; sec = true;
+                }
+            }
+            
+            cout << init << " " << fir << " " << sec << " " << i << endl;
+            
+            
+            init = (init + 1) % 2;
+            if(init == 0) {
+                fir = false;
+                sec = false;
+            }
+            
+              cout << "c" << (ret== true) << " " << (init == 0) << " " << (fir = false) << " " << (sec == false) << endl;
+        }
+        
+        if((ret == true) && (init == 0) && (fir = false) && (sec == false)) {
+            cout << "YES" << endl;
+        } else {
+            cout << "NO" << endl;
+        }
+    }
+}
