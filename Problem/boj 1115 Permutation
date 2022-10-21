@@ -1,0 +1,79 @@
+/*
+boj 1115 Permutation
+Algorithm: DFS or SCC
+TC: O(N)
+SC: O(N)
+Explaination:
+
+I use SCC for checking the number of loop
+
+But, It is not essential.
+The given vector is Permutation, so,
+Only checking the collision is what I just do.
+
+
+
+*/
+
+#include <bits/stdc++.h>
+#define endl "\n"
+#define ll long long
+
+using namespace std;
+
+int N;
+vector<int> P;
+vector<int> sccId, discovered, finished;
+int sccCounter, vertexCounter;
+stack<int> st;
+
+//here 서브트리가 닿을 수 있는 최소 discovered
+int scc(int here) {
+    int ret = discovered[here] = vertexCounter++;
+    st.push(here);
+    int there = P[here];
+    //트리 간선 -> there도 검사
+    if(discovered[there] == -1) {
+        ret = min(ret, scc(there));
+    }
+    //교차 간선이나 역방향 간선 -> 이미 구해진 것으로, 
+    else if(discovered[there] < discovered[here] || sccId[there] != 0) {
+        ret = min(ret, discovered[there]);    
+    }
+    
+    //만약 지금이 scc의 루트라면,
+    if(ret == discovered[here]) {
+        while(true) {
+            int t = st.top();
+            st.pop();
+            sccId[t] = sccCounter;
+            
+            if(t == here) break;
+        }
+        sccCounter++;
+    }
+    finished[here] = 1;
+    return ret;
+}
+
+void findSCC(){
+    sccCounter = vertexCounter = 0;
+    sccId = discovered = vector<int>(N,-1);
+    finished = vector<int>(N, 0);
+    
+    for(int i = 0; i < N; i++) if(discovered[i] == -1) scc(i);
+    
+    if(sccCounter == 1) cout << 0 << endl;
+    else cout << sccCounter << endl;
+    
+}
+
+int main() {
+    cin >> N;
+    for(int i = 0; i < N; i++) {
+        int x;cin >> x;
+        P.push_back(x);
+    }
+    
+    findSCC();
+}
