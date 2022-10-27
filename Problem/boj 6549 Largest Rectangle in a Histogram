@@ -1,0 +1,83 @@
+/*
+boj 6549 Largest Rectangle in a Histogram
+Algorithm: Divide & Conquer
+TC: O(nlogn)
+SC: O(n)
+Explaination:
+분할 정복 풀이
+직관적으로 가장 쉬운 풀이인 분할 정복으로 푼 케이스이다.
+병합 정렬 은 둘 다 왼쪽에서 오른쪽으로 인덱스를 옮기지만
+이 문제는 양 쪽으로 인덱스를 옮겨 가면 된다.
+
+스택 풀이
+
+세그먼트 트리 풀이
+
+*/
+
+
+#include <bits/stdc++.h>
+#define ll long long 
+#define endl "\n"
+
+
+using namespace std;
+
+ll h[100001];
+
+ll maxRange(int left, int right) {
+    if(left == right) return h[left];
+    
+    int mid = (left + right) / 2;
+    ll leftMax = maxRange(left, mid);
+    ll rightMax = maxRange(mid + 1, right);
+    
+    int lp = mid, rp = mid + 1;
+    ll tmph = min(h[lp], h[rp]);
+    ll midMax = tmph * (rp - lp + 1);
+    lp--; rp--;
+    while(lp >= left && rp <= right) {
+        if(h[lp] > h[rp]) {
+            tmph = min(h[lp], tmph);
+            midMax = max(midMax, tmph * (rp - lp));
+            lp--;
+        } else {
+            tmph = min(h[rp], tmph);
+            midMax = max(midMax, tmph * (rp - lp));
+            rp++;
+        }
+    }
+    if(lp < left) {
+        while(rp <= right) {
+            tmph = min(h[rp], tmph);
+            midMax = max(midMax, tmph * (rp - lp));
+            rp++;    
+        }
+    } else {
+        while(lp >= left) {
+            tmph = min(h[lp], tmph);
+            midMax = max(midMax, tmph * (rp - lp));
+            lp--;
+        }
+    }
+    return max({leftMax, rightMax, midMax});
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    
+    int n;
+    while(true) {
+        cin >> n;
+        if(n == 0) break;
+        
+        for(int i = 0; i < n; i++) {
+            int x; cin >> x;
+            h[i] = x;
+        }
+        
+        cout << maxRange(0, n - 1) << endl;
+    }
+}
