@@ -1,0 +1,92 @@
+#include <bits/stdc++.h>
+#define all(x) x.begin(), x.end()
+
+using namespace std;
+const int N = 2*100001;
+
+int routeId[N];
+vector<int> edge[N];
+vector<int> rEdge[N];
+
+//마지막 노드 
+int bfs(int start) {
+    routeId[start] = 0;
+    queue<int> q;
+    
+    //1번째 노드 발견 
+    int route = 1;
+    for(int there: edge[start]) {
+        q.push(there);
+        routeId[there] = route++;
+    }
+    
+    //bfs 실시 
+    while(!q.empty()) {
+        int here = q.front();
+        q.pop();
+        for(int there : edge[here]) {
+            if(there == start) continue;
+            
+            if(routeId[there] == -1) {
+                routeId[there] = routeId[here];
+                q.push(there);
+            } else if(routeId[there] != routeId[here]) {
+                return there;
+            }
+        }
+    }
+    return -1;
+}
+
+void dfs(vector<int>& v, int here, int start) {
+    for(int there: rEdge[here]) {
+        if(there == start) {
+            v.push_back(there);
+            return;
+        } else if(routeId[here] == routeId[there]) {
+            v.push_back(there);
+            dfs(v, there, start);
+        }
+    }
+    return;
+}
+
+void reconstruct(int t, int s) {
+    vector<int> v;
+    v.push_back(t);
+    dfs(v, t, s);
+    reverse(all(v));
+    cout << v.size() << endl;
+    for(int node : v) {
+        cout << node << " ";
+    }
+    cout << endl;
+    return;
+}
+
+int main() {
+    
+    memset(routeId, -1, sizeof(routeId));
+    int n, m, s;
+    cin >> n >> m >> s;
+
+    while(m--) {
+        int ui, vi;
+        cin >> ui >> vi;
+        edge[ui].push_back(vi);
+        rEdge[vi].push_back(ui);
+    }
+    
+    int t = bfs(s);
+    cout << t << endl;
+    
+    if(t == -1) cout << "IMPOSSIBLE" << endl;
+    else {
+        for(int there : rEdge[t]) {
+            if(routeId[there] != -1) {
+                reconstruct(there, s);
+            }
+        }
+    }
+    
+}
