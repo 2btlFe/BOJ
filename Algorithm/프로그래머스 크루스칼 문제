@@ -22,7 +22,7 @@ void unionParent(pair<int, int> parent[][301], pair<int, int> x, pair<int, int> 
     if(isSmallPair(x, y)) {
         parent[y.first][y.second] = x;
     } else {
-        parent[x.first][y.second] = y;
+        parent[x.first][x.second] = y;
     }
 }
 
@@ -65,8 +65,8 @@ int solution(vector<vector<int>> land, int height) {
     while(!pq.empty()) {
         Edge e = pq.top();
         pq.pop();
-        if(getParent(parent, e.from) != getParent(parent, e.to)) {
-            cout << e.from.first << " " << e.from.second << " -> " << e.to.first << " " << e.to.second <<  " : " << e.cost << endl;
+        if(!isSamePair(getParent(parent, e.from), getParent(parent, e.to))) {
+            //cout << e.from.first << " " << e.from.second << " -> " << e.to.first << " " << e.to.second <<  " : " << e.cost << endl;
             unionParent(parent, e.from, e.to);
             if(e.cost > height) {
                 sum += e.cost;
