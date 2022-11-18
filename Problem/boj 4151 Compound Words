@@ -1,0 +1,123 @@
+/*
+boj 4151 Compound Words
+Algorithm: Trie
+TC: O(N*|S|)
+SC: 
+노드 갯수: |S| * N
+포인터 배열 개수: 26
+포인터 크기 : 8byte
+
+Expaination:
+
+트라이 + dp 원리 사용
+
+alienation
+
+alien 
+ation
+
+이렇게 있다면, 
+
+alienation에서 alien까지 찾고 
+ation은 Root에서 다시 시작한다 
+S의 긑에 왔을 때, terminal이라면, 
+2개의 단어가 합쳐진 하나의 단어가 존재함을 알 수 있음
+*/
+
+#include <bits/stdc++.h>
+#define ll long long int
+#define all(x) x.begin(),x.end()
+#define endl "\n"
+
+using namespace std;
+
+const int ALPHABETS = 26;
+const int DIGIT = 10;
+int toNumber(char ch) {return ch - 'a';}
+
+
+struct TrieNode {
+    TrieNode* children[ALPHABETS];
+    bool terminal;
+    TrieNode() : terminal(false) {
+        //0으로 초기화 
+        memset(children, 0, sizeof(children));
+    }
+    ~TrieNode() {
+        for(int i = 0; i < ALPHABETS; i++) {
+            if(children[i]) 
+                delete children[i];
+        }
+    }
+    
+    void insert(const char* key) {
+        //문자열이 끝나면 terminal를 참으로 바꾸고 종료 
+        if(*key == 0) {
+            terminal = true;
+        } else {
+            int next = toNumber(*key);
+            if(children[next] == NULL) 
+                children[next] = new TrieNode();
+            //해당 자식 노드로 재귀 호출 
+            children[next] -> insert(key + 1);
+        }
+    }
+    
+    TrieNode* find(const char* key) {
+        if(*key == 0) {
+            cout << this -> terminal << endl;
+            return this;
+        }
+        
+        int next = toNumber(*key);
+        if(children[next] == NULL) return NULL;
+        return children[next] -> find(key + 1);
+    }
+    
+    bool find(TrieNode* Root, const char* key, int cnt) {
+        if(*key == 0) {
+            if(this -> terminal == true && cnt == 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        
+        bool ret = false;
+        if(this -> terminal == true && cnt == 1) {
+            //cout << "check " << key << endl;
+            ret |= Root -> find(Root, key, cnt - 1);
+        }
+        
+        int next = toNumber(*key);
+        if(children[next] != NULL) {
+            ret |= children[next] -> find(Root, key + 1, cnt);
+        }
+      
+        return ret;
+    }
+};
+
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    
+        TrieNode* Root = new TrieNode(); 
+        
+        vector<string> v;
+        string s;
+        while(1) {
+            cin >> s;
+            if(cin.eof()) break;
+            Root->insert(s.c_str());
+            v.push_back(s);
+        }
+        
+        for(string s: v) {
+            //cout << s << endl;
+            if(Root -> find(Root, s.c_str(), 1)) cout << s << endl;
+        }
+        
+    }
