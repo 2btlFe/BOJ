@@ -1,0 +1,78 @@
+/*
+boj 14725 Ant Nest
+Algorithm: Trie + Map + DFS
+TC: O(N|S|)
+SC: 
+노드 갯수: |15*S| * N
+포인터 배열 개수: 225개의 char 
+포인터 크기 : 8byte
+
+Expaination:
+
+Trie + Map + dfs
+
+*/
+
+#include <bits/stdc++.h>
+#define ll long long int
+#define all(x) x.begin(),x.end()
+#define endl "\n"
+
+using namespace std;
+
+struct TrieNode{
+    map<string, TrieNode*> children;
+    bool terminal;
+    
+    TrieNode() : terminal(false) {
+        
+    }
+    
+    ~TrieNode() {
+        children.clear();
+    }  
+    
+    void insert(const vector<string>& wordSet, int index) {
+        if(index == wordSet.size()) {
+            terminal = true;
+        } else {
+            string next = wordSet[index];
+            if(children.count(next) == 0) 
+                children[next] = new TrieNode();
+            
+            children[next] -> insert(wordSet, index+1); 
+        }
+    }  
+      
+    void dfs(int depth) {
+        for(auto it = children.begin(); it != children.end(); it++) {
+            for(int i = 0; i < depth; i++) cout << "--";
+            
+            for(char c : it->first) cout << c ;
+            cout << endl;
+            //cout << (it->first) << end; 이거는 안 됨 
+            (it->second) -> dfs(depth + 1);
+        }
+    }  
+};
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    
+    TrieNode* Root = new TrieNode();
+    
+    int N; cin >> N;
+    while(N--) {
+        int k; cin >> k;
+        vector<string> v;
+        while(k--) {
+            string s; cin >> s;
+            v.push_back(s);
+        }
+        Root->insert(v, 0);
+    }
+    
+    Root->dfs(0);
+}
