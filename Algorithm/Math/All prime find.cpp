@@ -1,4 +1,6 @@
- const int N = 1e6 + 6;
+//TC: O(nlog(logn))
+
+const int N = 1e6 + 6;
 vector<int> isprime(N, 1); 
 vector<int> sprime;
  
