@@ -1,0 +1,22 @@
+// TC : O(sqrt(n))
+
+ll phi(ll n) {
+    ll ret = n;
+    ll tp = n;
+    for(ll p = 2; p*p <= n; p++) {
+        if(tp % p == 0) {
+            ret /= p;
+            ret*=(p - 1);
+            
+            while(tp % p == 0) {
+                tp /= p;
+            }
+        }
+    }    
+    if(tp != 1) {
+        ret /= tp;
+        ret *= (tp - 1);
+    }
+    
+    return ret;
+}
