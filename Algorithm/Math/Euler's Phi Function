@@ -1,4 +1,15 @@
-// TC : O(sqrt(n))
+/*
+TC : O(sqrt(n))
+SC : O(1)
+Explaination:
+
+1) phi(n) = n이하의 수 중  n과 서로소가 1인 수의 개수
+2) phi(p) = 소수 p와 서로소가 1인 수의 개수는 p를 제외한 모든 수, 즉 p - 1 이다
+3) phi(p^k) = 소수p의 거듭제곱가 서로소가 되는 수의 개수는 p의 배수를 제외한 수이다
+              즉, p^k - (p^k/p) = p^(k) - p^(k-1)
+4) phi(nm) = phi(n) * phi(m) 이다.              
+직접 확인해서 증명하거나, 포함 배제를 사용하면 된다 
+*/
 
 ll phi(ll n) {
     ll ret = n;
