@@ -1,0 +1,73 @@
+/*
+boj 17281 Baseball
+Algorithm: Brute Force, Implementation
+TC: O(8! * 50 * 27)
+SC: O(8! * 50 * 27)
+Explaination:
+단순 구현
+*/
+
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int n; 
+int v[51][10];
+int score(vector<int> lineup) {
+    
+    int ret = 0;
+    int bat = 0;
+    for(int i = 0; i < n; i++) {
+        int out = 0;
+        bool base[4];
+        memset(base, 0, sizeof(base));
+        
+        while(out < 3) {
+            int batter = lineup[bat];
+            base[0] = true;
+            for(int nowbase = 3; nowbase >= 0; nowbase--) {
+                if(base[nowbase]) {
+                    int nextbase = nowbase + v[i][batter];
+                    base[nowbase] = false;
+                    
+                    if(nextbase > 3) ret++;
+                    else {
+                        base[nextbase] = true;
+                    }
+                }
+            }
+            if(v[i][batter] == 0) out++;
+            bat = (bat + 1) % 9;
+        }
+    }
+    return ret;
+}
+
+int backtracking() {
+    int ret = 0;
+    vector<int> perm ={1, 2, 3, 4, 5, 6, 7, 8};
+
+    do {
+        vector<int> lineup = perm;
+        lineup.insert(lineup.begin() + 3, 0);
+        ret = max(ret, score(lineup));
+    } while(next_permutation(perm.begin(), perm.end()));
+    
+    return ret;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    
+    cin >> n;
+    for(int i = 0; i < n; i++) {
+        for(int j = 0; j < 9; j++) {
+            int x; cin >> x;
+            v[i][j] = x;
+        }
+    }
+    
+    cout << backtracking() << endl;
+}
