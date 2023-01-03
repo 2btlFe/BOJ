@@ -34,32 +34,17 @@ a*c + n*k = 1로 두어 배주 항등식 푼다
 
 */
 
-//gcd(a, b) = ax+ by
-tuple<ll, ll, ll> extended_gcd(ll a, ll b)
-{
-    if (a == 0) {
-        return make_tuple(b, 0, 1);
-    }
- 
-    ll gcd, x, y;
- 
-    // 함수에 의해 반환된 튜플을 변수로 압축을 풉니다.
-    tie(gcd, x, y) = extended_gcd(b % a, a);
- 
-    return make_tuple(gcd, (y - (b/a) * x), x);
+
+//as + bt = gcd(a,b) 에 대한 s, t 를 구해줌 
+tuple<ll, ll, ll> extended_euclidean(ll a, ll b) {
+    if (b == 0)
+        return make_tuple(a, 1, 0);
+    auto [g, x, y] = extended_euclidean(b, a%b);
+    return make_tuple(g, y, x-(a/b)*y);
 }
 
-
-/* 곱셈의 역원 구하기 
-int main() {
-    ll A, N; cin >> N >> A;
-    ll reversePlus = N - (A % N);
-    tuple<ll, ll, ll> reverseMul = extended_gcd(A, N);
-    
-    cout << reversePlus << " ";
-    if(1%get<0>(reverseMul)) cout << -1 << endl; 
-    else {
-        cout << (get<1>(reverseMul) + N) % N << endl;
-    }
+ll modInverse(ll a, ll m) {
+    auto [g, s, _] = extended_euclidean(a, m);
+    if(g != 1) return -1;
+    return (s % m + m) % m;
 }
-*/
