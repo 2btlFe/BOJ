@@ -1,3 +1,7 @@
+//TC: O(V+E)
+
+const int MAX = 1e5;
+vector<int> adj[MAX + 1];
 
 // 각 정점의 컴포넌트 번호. 컴포넌트 번호는 0 부터 시작하며, 
 // 같은 강결합 컴포넌트에 속한 정점들의 컴포넌트 번호가 같다.
@@ -22,8 +26,8 @@ int scc(int here) {
     // (here,there) 가 트리 간선
     if(discovered[there] == -1) 
       ret = min(ret, scc(there));
-    // (here,there) 가 역방향이나 교차 간선
-    else if(discovered[there] < discovered[here] && sccId[there] == -1) 
+    // (here,there) 무시할 수 없는 교차 간선(SCC Id가 아직 정해지지 않았고 나보다 먼저 접근된 노드)
+    else if(sccId[there] == -1) 
       ret = min(ret, discovered[there]);
   }  
   // here 가 강결합 컴포넌트의 루트인가 확인한다
@@ -37,18 +41,16 @@ int scc(int here) {
     }
     ++sccCounter;
   }
-  finished[here] = 1;
   return ret;
 }
 
 // tarjan 의 SCC 알고리즘
 vector<int> tarjanSCC() {
   // 배열들을 전부 초기화
-  sccId = discovered = vector<int>(MAX*2, -1);
-  finished = vector<int>(MAX*2, 0);
+  sccId = discovered = vector<int>(MAX, -1);
   // 카운터 초기화
   sccCounter = vertexCounter = 0;
   // 모든 정점에 대해 scc() 호출
-  for(int i = 0; i < MAX*2; i++) if(discovered[i] == -1) scc(i);
+  for(int i = 0; i < MAX; i++) if(discovered[i] == -1) scc(i);
   return sccId;
 }
