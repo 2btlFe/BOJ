@@ -1,3 +1,7 @@
+/*
+숫자 Trie
+그냥 재귀적으로 접근하면 된다
+*/
 #include <bits/stdc++.h>
 #define ll long long
 #define endl "\n"
@@ -58,23 +62,30 @@ void solve() {
         vector<int> tmp;
         for(int j = 0; j < M; j++) {
             int x; cin >> x;
-            tmp.push_back(x);
+            tmp.push_back(x-1);
         }
         v.push_back(tmp);
-        Root->insert(tmp, 0);
     }
     
     for(int i = 0; i < N; i++) {
         vector<int> tmp(M);
         for(int j = 0; j < M; j++) {
-            tmp[v[i][j] - 1] = j + 1;
+            tmp[v[i][j]] = j;
         }
-        cout << Root->find(tmp, 0) << " ";
+        Root->insert(tmp, 0);
+    }
+    
+    for(int i = 0; i < N; i++) {
+        cout << Root->find(v[i], 0) << " ";
     }
     cout << endl;
 }
 
 int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    cout.tie(0);
+    
     int t; cin >> t;
     while(t--) {
         solve();
