@@ -1,0 +1,61 @@
+#include <bits/stdc++.h>
+#define endl "\n"
+#define ll long long
+#define all(x) x.begin(), x.end()
+
+using namespace std;
+
+const int N = 401;
+const int INF = 987654321;
+
+int cap[N][N], flow[N][N];
+int n, p;
+
+
+int networkFlow(int src, int sink) {
+    memset(flow, 0, sizeof(flow));
+    int totalflow = 0;
+    while(true) {
+        vector<int> parent(N, -1);
+        queue<int> q;
+        q.push(src);
+        while(!q.empty() && parent[sink] == -1) {
+            int here = q.front(); 
+            q.pop();
+            for(int there = 1; there <= n; there++) {
+                if(cap[here][there] - flow[here][there] > 0 &&  parent[there] == -1) {
+                    q.push(there);
+                    parent[there] = here;
+                }
+            }
+        }
+        
+        if(parent[sink] == -1) break;
+        
+        int amount = INF;
+        for(int p = sink; p != src; p = parent[p]) {
+            amount = min(cap[parent[p]][p] - flow[parent[p]][p], amount);
+        }
+        
+        for(int p = sink; p != src; p = parent[p]) {
+            flow[parent[p]][p] += amount;
+            flow[p][parent[p]] -= amount;
+        }
+        totalflow += amount;
+    }
+    return totalflow;
+}
+
+int main() {
+    cin >> n >> p;
+    for(int i = 0; i < p; i++) {
+        int a, b;
+        cin >> a >> b;
+        cap[a][b] = 1;
+    }
+    
+    int ans = networkFlow(1, 2);
+    cout << ans << endl;
+    
+    return 0;
+}
